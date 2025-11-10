@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(dir)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(node_modules/.bin/tailwindcss:*)",
+      "Bash(npm run dev:*)",
+      "Bash(rm:*)",
+      "Bash(dir /B /S \"c:\\Users\\ferha\\OneDrive\\Bureau\\work\\suisse-test\\src\")",
+      "Bash(cat:*)",
+      "Bash(dir:*)",
+      "Bash(npm run build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,24 @@
+app-admin : 
+ - pending acocunts approve modal : --- done 
+
+ - clients view and edit modal : --- done 
+
+  - team & org : remove status from crud table and just make it a select in the edit modal, remove nmbr of reports column and add it in the view modal, remove nmbr of users and add it in the view modal, edit modal becomes both view and edit modal, : --- done 
+
+ - notifications page : --- done
+
+ - data sources : add client name as a header instead of the data source plus data source bellow, edit becomes view: --- done
+
+ - remove publishing page : --- done
+
+ - dashboard : total users become total clients, remove active clients card, platform health : system status with a select and control over the app-user + just power bi and vps info if something's not working : --- done
+
+ - access plan edit modal: --- done 
+
+ - dashboard: --- done 
+
+ - add data source modal: --- done
+
+ - profile page: --- done
+
+ - improve sidebar animation: --- 

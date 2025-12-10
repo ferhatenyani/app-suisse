@@ -27,18 +27,18 @@ const StatCard = React.memo<StatCardProps>(({ title, value, change, changeLabel,
       {/* Subtle gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" aria-hidden="true" />
 
-      <div className="relative flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-xs xs:text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+      <div className="relative flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
             {title}
           </p>
-          <p className="text-2xl xs:text-3xl font-bold text-[var(--color-title)] mb-3 tracking-tight">
+          <p className="text-2xl sm:text-3xl lg:text-3xl font-bold text-[var(--color-title)] mb-2 sm:mb-3 tracking-tight truncate">
             {value}
           </p>
           {change !== undefined && (
-            <div className="flex items-center gap-1.5">
-              {isPositive && <TrendingUp size={14} className="text-[var(--color-success)]" strokeWidth={2.5} aria-hidden="true" />}
-              {isNegative && <TrendingDown size={14} className="text-[var(--color-danger)]" strokeWidth={2.5} aria-hidden="true" />}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {isPositive && <TrendingUp size={14} className="text-[var(--color-success)] flex-shrink-0" strokeWidth={2.5} aria-hidden="true" />}
+              {isNegative && <TrendingDown size={14} className="text-[var(--color-danger)] flex-shrink-0" strokeWidth={2.5} aria-hidden="true" />}
               <span className={`text-xs font-semibold ${
                 isPositive ? 'text-[var(--color-success)]' : isNegative ? 'text-[var(--color-danger)]' : 'text-[var(--color-text-secondary)]'
               }`}>
@@ -50,7 +50,7 @@ const StatCard = React.memo<StatCardProps>(({ title, value, change, changeLabel,
             </div>
           )}
         </div>
-        <div className="w-10 h-10 xs:w-12 xs:h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-primary)] group-hover:scale-110 transition-transform duration-300" aria-hidden="true">
+        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-primary)] group-hover:scale-110 transition-transform duration-300 flex-shrink-0" aria-hidden="true">
           {icon}
         </div>
       </div>
@@ -94,24 +94,24 @@ const RecentActivity: React.FC = () => {
   return (
     <Card elevated>
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-base font-bold text-[var(--color-title)] tracking-tight">Recent Activity</h3>
+        <h3 className="text-sm sm:text-base font-bold text-[var(--color-title)] tracking-tight">Recent Activity</h3>
         <button
           onClick={() => navigate('/app/reports')}
-          className="text-xs font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1 rounded"
+          className="text-xs sm:text-sm font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1 rounded"
           aria-label="View all activities"
         >
           View All
         </button>
       </div>
-      <div className="space-y-3 xs:space-y-4">
+      <div className="space-y-4">
         {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start gap-2 xs:gap-3 pb-3 xs:pb-4 border-b border-[var(--color-border)] last:border-0 last:pb-0">
-            <div className="mt-1">
+          <div key={activity.id} className="flex items-start gap-3 pb-4 border-b border-[var(--color-border)] last:border-0 last:pb-0">
+            <div className="mt-1 flex-shrink-0">
               {getTypeBadge(activity.type)}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm text-[var(--color-text)] font-semibold truncate">{activity.title}</p>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center flex-wrap gap-2 mt-1">
                 {activity.user && (
                   <>
                     <span className="text-xs text-[var(--color-text-muted)] font-medium">{activity.user}</span>
@@ -148,22 +148,24 @@ export const Dashboard: React.FC = () => {
   }).length;
 
   return (
-    <div className="space-y-6 xs:space-y-8 animate-fadeIn">
-      {/* Header */}
-      <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 xs:gap-0">
-        <div>
-          <h1 className="text-2xl xs:text-3xl font-bold text-[var(--color-title)] tracking-tight">Dashboard</h1>
-          <p className="text-sm xs:text-base text-[var(--color-text-secondary)] mt-1 xs:mt-2 font-medium">
+    <div className="min-h-screen pb-8 animate-fadeIn">
+      {/* Header Section - Flexbox with consistent spacing */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-title)] tracking-tight">
+            Dashboard
+          </h1>
+          <p className="text-sm sm:text-base text-[var(--color-text-secondary)] mt-2 font-medium">
             {isOrganization ? `${currentUser.companyName} Overview` : 'Your workspace overview'}
           </p>
         </div>
-        <div className="text-xs xs:text-sm text-[var(--color-text-muted)] font-medium">
+        <div className="text-xs sm:text-sm text-[var(--color-text-muted)] font-medium whitespace-nowrap">
           Last updated: {formatDate(new Date().toISOString())}
         </div>
-      </div>
+      </header>
 
       {/* Stats Grid - Responsive: 1 col mobile, 2 col tablet, 4 col desktop */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 xs:gap-5">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" aria-label="Dashboard statistics">
         <StatCard
           title="Total Reports"
           value={totalReports}
@@ -192,26 +194,28 @@ export const Dashboard: React.FC = () => {
           changeLabel="shared globally"
           icon={<Globe size={20} strokeWidth={1.5} />}
         />
-      </div>
+      </section>
 
-      {/* Recent Reports */}
-      <div>
-        <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3 xs:gap-0 mb-4 xs:mb-5">
+      {/* Recent Reports - Full width section */}
+      <section className="mb-8" aria-label="Recent reports">
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-lg xs:text-xl font-bold text-[var(--color-title)] tracking-tight">Recent Reports</h2>
-            <p className="text-xs xs:text-sm text-[var(--color-text-secondary)] mt-1 font-medium">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-title)] tracking-tight">
+              Recent Reports
+            </h2>
+            <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mt-1 font-medium">
               Recently updated reports and dashboards
             </p>
           </div>
           <button
             onClick={() => navigate('/app/reports')}
-            className="text-sm font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1 rounded self-start xs:self-auto"
+            className="text-xs sm:text-sm font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1 rounded self-start sm:self-auto"
             aria-label="View all reports"
           >
             View All →
           </button>
-        </div>
-        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 xs:gap-5">
+        </header>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {dashboards.slice(0, 4).map((dashboard, index) => (
             <Card
               key={dashboard.id}
@@ -245,27 +249,29 @@ export const Dashboard: React.FC = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 xs:gap-6">
+      {/* Content Grid - Two column layout for Recent Activity and Quick Actions */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" aria-label="Activity and actions">
         {/* Recent Activity - Takes 2 columns */}
         <div className="lg:col-span-2">
           <RecentActivity />
         </div>
 
         {/* Quick Actions & Team Overview */}
-        <div className="space-y-5 xs:space-y-6">
+        <div className="space-y-6">
           {/* Quick Actions */}
           <Card elevated>
-            <h3 className="text-base font-bold text-[var(--color-title)] tracking-tight mb-4 xs:mb-5">Quick Actions</h3>
-            <div className="space-y-2 xs:space-y-3">
+            <h3 className="text-sm sm:text-base font-bold text-[var(--color-title)] tracking-tight mb-5">
+              Quick Actions
+            </h3>
+            <div className="space-y-2.5">
               <button
                 onClick={() => navigate('/app/reports')}
-                className="w-full text-left px-3 xs:px-4 py-2.5 xs:py-3 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-2 xs:gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
+                className="w-full text-left px-4 py-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
                 aria-label="Create new report"
               >
-                <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors" aria-hidden="true">
+                <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors flex-shrink-0" aria-hidden="true">
                   <FolderKanban size={16} strokeWidth={2} className="text-[var(--color-primary)]" />
                 </div>
                 Create New Report
@@ -273,10 +279,10 @@ export const Dashboard: React.FC = () => {
               {isOrganization && (
                 <button
                   onClick={() => navigate('/app/team')}
-                  className="w-full text-left px-3 xs:px-4 py-2.5 xs:py-3 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-2 xs:gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
+                  className="w-full text-left px-4 py-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
                   aria-label="Manage team"
                 >
-                  <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors" aria-hidden="true">
+                  <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors flex-shrink-0" aria-hidden="true">
                     <Users size={16} strokeWidth={2} className="text-[var(--color-primary)]" />
                   </div>
                   Manage Team
@@ -284,10 +290,10 @@ export const Dashboard: React.FC = () => {
               )}
               <button
                 onClick={() => navigate('/app/reports')}
-                className="w-full text-left px-3 xs:px-4 py-2.5 xs:py-3 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-2 xs:gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
+                className="w-full text-left px-4 py-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
                 aria-label="View all reports"
               >
-                <div className="w-8 h-8 xs:w-9 xs:h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors" aria-hidden="true">
+                <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors flex-shrink-0" aria-hidden="true">
                   <Eye size={16} strokeWidth={2} className="text-[var(--color-primary)]" />
                 </div>
                 View All Reports
@@ -299,7 +305,9 @@ export const Dashboard: React.FC = () => {
           {isOrganization && (
             <Card elevated>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-[var(--color-title)] tracking-tight">Team Overview</h3>
+                <h3 className="text-sm sm:text-base font-bold text-[var(--color-title)] tracking-tight">
+                  Team Overview
+                </h3>
                 <button
                   onClick={() => navigate('/app/team')}
                   className="text-xs font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors"
@@ -326,7 +334,7 @@ export const Dashboard: React.FC = () => {
             </Card>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 };

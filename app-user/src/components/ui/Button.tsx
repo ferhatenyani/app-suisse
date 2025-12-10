@@ -24,7 +24,7 @@ export const Button = React.memo<ButtonProps>(({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center gap-1.5 xs:gap-2 font-medium rounded-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
+  const baseStyles = 'inline-flex items-center justify-center gap-2 font-semibold rounded-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none';
 
   const variants = {
     primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] focus-visible:ring-[var(--color-primary-light)]',
@@ -34,11 +34,10 @@ export const Button = React.memo<ButtonProps>(({
     danger: 'bg-[var(--color-danger)] text-white hover:opacity-90 focus-visible:ring-[var(--color-danger-light)]',
   };
 
-  // Responsive sizing: smaller on mobile, scale up on larger screens
   const sizes = {
-    sm: 'px-2.5 py-1.5 text-xs xs:px-3 xs:text-sm h-7 xs:h-8',
-    md: 'px-3 py-1.5 text-sm xs:px-4 xs:py-2 h-8 xs:h-9',
-    lg: 'px-4 py-2 text-sm xs:px-5 xs:py-2.5 xs:text-base h-9 xs:h-10',
+    sm: 'px-3 py-1.5 text-xs h-8',
+    md: 'px-4 py-2 text-sm h-9',
+    lg: 'px-5 py-2.5 text-base h-10',
   };
 
   return (

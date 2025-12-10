@@ -35,8 +35,7 @@ export const Card = React.memo<CardProps>(({
         hover && 'transition-all duration-200 hover:shadow-lg hover:border-[var(--color-border-strong)] hover:-translate-y-0.5',
         onClick && 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2',
         !hover && 'transition-shadow duration-150',
-        // Responsive padding: smaller on mobile
-        noPadding ? '' : 'p-4 xs:p-5 md:p-6',
+        noPadding ? '' : 'p-6',
         className
       )}
       onClick={onClick}

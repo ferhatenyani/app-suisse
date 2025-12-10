@@ -23,27 +23,28 @@ export const Input: React.FC<InputProps> = ({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1.5 uppercase tracking-wide"
+          className="block text-sm font-semibold text-[var(--color-text)] mb-2"
         >
           {label}
         </label>
       )}
       <div className="relative">
         {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] pointer-events-none">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] pointer-events-none">
             {icon}
           </div>
         )}
         <input
           id={inputId}
           className={`
-            w-full px-3 py-2 ${icon ? 'pl-10' : ''}
+            w-full px-4 py-2.5 ${icon ? 'pl-11' : ''}
             border rounded-md
             text-sm text-[var(--color-text)]
             placeholder:text-[var(--color-text-muted)]
-            bg-[var(--color-surface)]
+            bg-[var(--color-panel)]
             focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-light)] focus:border-[var(--color-primary)]
             transition-all duration-150
+            disabled:opacity-60 disabled:cursor-not-allowed
             ${error
               ? 'border-[var(--color-danger)] focus:ring-[var(--color-danger-light)]'
               : 'border-[var(--color-border)] hover:border-[var(--color-border-strong)]'
@@ -54,12 +55,12 @@ export const Input: React.FC<InputProps> = ({
         />
       </div>
       {error && (
-        <p className="mt-1 text-xs text-[var(--color-danger)]">
+        <p className="mt-1.5 text-xs text-[var(--color-danger)] font-medium">
           {error}
         </p>
       )}
       {helperText && !error && (
-        <p className="mt-1 text-xs text-[var(--color-text-muted)]">{helperText}</p>
+        <p className="mt-1.5 text-xs text-[var(--color-text-muted)] font-medium">{helperText}</p>
       )}
     </div>
   );

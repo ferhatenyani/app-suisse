@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Settings, LogOut, ChevronDown, Search, Bell, ChevronRight } from 'lucide-react';
 import { Avatar } from '../ui/Avatar';
@@ -10,6 +10,23 @@ export const TopNav: React.FC = () => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Close dropdown when route changes
+  useEffect(() => {
+    setIsDropdownOpen(false);
+  }, [location.pathname]);
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isDropdownOpen) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isDropdownOpen]);
 
   const handleLogout = () => {
     // Mock logout
@@ -70,12 +87,13 @@ export const TopNav: React.FC = () => {
 
             {/* Right: Search, User */}
             <div className="flex items-center gap-3">
-              {/* Search Bar */}
-              <div className="hidden lg:flex items-center gap-2.5 px-4 py-2 bg-[var(--color-panel)] border border-[var(--color-border)] rounded-xl w-72 hover:border-[var(--color-primary)] focus-within:border-[var(--color-primary)] transition-colors">
-                <Search size={18} className="text-[var(--color-text-muted)]" strokeWidth={2} />
+              {/* Search Bar - visible from md+ (768px) */}
+              <div className="hidden md:flex items-center gap-2.5 px-3 xs:px-4 py-2 bg-[var(--color-panel)] border border-[var(--color-border)] rounded-xl w-56 md:w-64 lg:w-72 hover:border-[var(--color-primary)] focus-within:border-[var(--color-primary)] transition-colors">
+                <Search size={16} className="text-[var(--color-text-muted)]" strokeWidth={2} />
                 <input
                   type="text"
                   placeholder="Search..."
+                  aria-label="Search reports and content"
                   className="flex-1 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none font-medium"
                 />
               </div>
@@ -84,7 +102,10 @@ export const TopNav: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[var(--color-surface-hover)] transition-colors"
+                  aria-label="User menu"
+                  aria-expanded={isDropdownOpen}
+                  aria-haspopup="true"
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[var(--color-surface-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
                 >
                   <Avatar
                     src={currentUser.avatar}
@@ -105,8 +126,14 @@ export const TopNav: React.FC = () => {
                     <div
                       className="fixed inset-0 z-10"
                       onClick={() => setIsDropdownOpen(false)}
+                      role="presentation"
+                      aria-hidden="true"
                     />
-                    <div className="absolute right-0 mt-3 w-60 bg-white rounded-xl border border-[var(--color-border)] py-2 z-20 shadow-xl animate-scaleIn">
+                    <div
+                      className="absolute right-0 mt-3 w-60 bg-white rounded-xl border border-[var(--color-border)] py-2 z-20 shadow-xl animate-scaleIn"
+                      role="menu"
+                      aria-orientation="vertical"
+                    >
                       <div className="px-4 py-3 border-b border-[var(--color-border)]">
                         <p className="text-sm font-bold text-[var(--color-title)] truncate">
                           {currentUser.name}
@@ -118,7 +145,8 @@ export const TopNav: React.FC = () => {
                           navigate('/app/profile');
                           setIsDropdownOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] transition-colors"
+                        role="menuitem"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] transition-colors focus-visible:outline-none focus-visible:bg-[var(--color-surface-hover)]"
                       >
                         <Settings size={16} className="text-[var(--color-text-muted)]" strokeWidth={2} />
                         Settings
@@ -126,7 +154,8 @@ export const TopNav: React.FC = () => {
                       <div className="border-t border-[var(--color-border)] mt-1 pt-1">
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-[var(--color-danger)] hover:bg-[var(--color-danger-light)] transition-colors"
+                          role="menuitem"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-[var(--color-danger)] hover:bg-[var(--color-danger-light)] transition-colors focus-visible:outline-none focus-visible:bg-[var(--color-danger-light)]"
                         >
                           <LogOut size={16} strokeWidth={2} />
                           Sign Out

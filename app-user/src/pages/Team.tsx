@@ -6,10 +6,12 @@ import { Button } from '../components/ui/Button';
 import { Table } from '../components/ui/Table';
 import { Avatar } from '../components/ui/Avatar';
 import { Select } from '../components/ui/Select';
+import { Badge } from '../components/ui/Badge';
 import { InviteUserModal } from '../components/ui/InviteUserModal';
 import { DeleteConfirmModal } from '../components/ui/DeleteConfirmModal';
 import { teamMembers } from '../data/teamMembers';
-import { TeamMember } from '../types';
+import { TeamMember, TeamMemberRole, TeamMemberStatus } from '../types';
+import { formatDate, pluralize } from '../utils/formatters';
 
 export const Team: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,77 +31,24 @@ export const Team: React.FC = () => {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+  const getRoleBadge = (role: TeamMemberRole) => {
+    const configs: Record<TeamMemberRole, { variant: 'primary' | 'info' | 'neutral'; icon: React.ReactNode; label: string }> = {
+      admin: { variant: 'primary', icon: <Shield size={10} strokeWidth={2} />, label: 'Admin' },
+      editor: { variant: 'info', icon: <Edit3 size={10} strokeWidth={2} />, label: 'Editor' },
+      viewer: { variant: 'neutral', icon: <Eye size={10} strokeWidth={2} />, label: 'Viewer' },
+    };
+    const config = configs[role];
+    return <Badge variant={config.variant} size="sm" icon={config.icon}>{config.label}</Badge>;
   };
 
-  const getRoleBadge = (role: string) => {
-    const configs = {
-      admin: {
-        bg: 'bg-[var(--color-primary-light)]',
-        text: 'text-[var(--color-primary)]',
-        icon: <Shield size={10} strokeWidth={2} />,
-        label: 'Admin'
-      },
-      editor: {
-        bg: 'bg-[var(--color-info-light)]',
-        text: 'text-[var(--color-info)]',
-        icon: <Edit3 size={10} strokeWidth={2} />,
-        label: 'Editor'
-      },
-      viewer: {
-        bg: 'bg-[var(--color-panel)]',
-        text: 'text-[var(--color-text-secondary)]',
-        icon: <Eye size={10} strokeWidth={2} />,
-        label: 'Viewer'
-      }
+  const getStatusBadge = (status: TeamMemberStatus) => {
+    const configs: Record<TeamMemberStatus, { variant: 'success' | 'warning' | 'danger'; label: string }> = {
+      active: { variant: 'success', label: 'Active' },
+      pending: { variant: 'warning', label: 'Pending' },
+      inactive: { variant: 'danger', label: 'Inactive' },
     };
-    const config = configs[role as keyof typeof configs] || configs.viewer;
-
-    return (
-      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border border-transparent text-xs font-medium ${config.bg} ${config.text}`}>
-        {config.icon}
-        {config.label}
-      </span>
-    );
-  };
-
-  const getStatusBadge = (status: string) => {
-    const configs = {
-      active: {
-        bg: 'bg-[var(--color-success-light)]',
-        text: 'text-[var(--color-success)]',
-        border: 'border-[var(--color-success-border)]',
-        dot: 'bg-[var(--color-success)]',
-        label: 'Active'
-      },
-      pending: {
-        bg: 'bg-[var(--color-warning-light)]',
-        text: 'text-[var(--color-warning)]',
-        border: 'border-[var(--color-warning-border)]',
-        dot: 'bg-[var(--color-warning)]',
-        label: 'Pending'
-      },
-      inactive: {
-        bg: 'bg-[var(--color-danger-light)]',
-        text: 'text-[var(--color-danger)]',
-        border: 'border-[var(--color-danger-border)]',
-        dot: 'bg-[var(--color-danger)]',
-        label: 'Inactive'
-      }
-    };
-    const config = configs[status as keyof typeof configs] || configs.inactive;
-
-    return (
-      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-xs font-medium ${config.bg} ${config.text} ${config.border}`}>
-        <span className={`w-1 h-1 rounded-full ${config.dot}`}></span>
-        {config.label}
-      </span>
-    );
+    const config = configs[status];
+    return <Badge variant={config.variant} size="sm" dot>{config.label}</Badge>;
   };
 
   const handleDeleteMember = (member: TeamMember) => {
@@ -120,8 +69,8 @@ export const Team: React.FC = () => {
         <div className="flex items-center gap-3">
           <Avatar src={row.avatar} name={row.name} size="md" />
           <div>
-            <p className="font-semibold text-[#1E1E2E]">{row.name}</p>
-            <p className="text-sm text-[#64748B]">{row.email}</p>
+            <p className="font-semibold text-[var(--color-text)]">{row.name}</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">{row.email}</p>
           </div>
         </div>
       ),
@@ -137,7 +86,7 @@ export const Team: React.FC = () => {
     {
       header: 'Joined Date',
       accessor: (row: TeamMember) => (
-        <span className="text-sm text-[#64748B]">{formatDate(row.joinedAt)}</span>
+        <span className="text-sm text-[var(--color-text-secondary)]">{formatDate(row.joinedAt)}</span>
       ),
     },
     {
@@ -148,7 +97,8 @@ export const Team: React.FC = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="!p-2 hover:bg-[#DBEAFE] hover:text-[#1D4ED8]"
+              className="!p-2 hover:bg-[var(--color-info-light)] hover:text-[var(--color-info)]"
+              aria-label="Resend invitation"
               title="Resend invitation"
             >
               <Mail size={16} />
@@ -157,8 +107,9 @@ export const Team: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            className="!p-2 text-[#EF4444] hover:bg-[#FEE2E2]"
+            className="!p-2 text-[var(--color-danger)] hover:bg-[var(--color-danger-light)]"
             onClick={() => handleDeleteMember(row)}
+            aria-label="Remove member"
             title="Remove member"
           >
             <Trash2 size={16} />
@@ -190,7 +141,7 @@ export const Team: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-4 mb-5">
           <Card>
             <div className="flex items-center justify-between">
               <div>
@@ -206,13 +157,13 @@ export const Team: React.FC = () => {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-[#64748B] uppercase tracking-wide">Active</p>
-                <p className="text-3xl font-bold text-[#1E1E2E] mt-1">
+                <p className="text-xs xs:text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Active</p>
+                <p className="text-2xl xs:text-3xl font-bold text-[var(--color-title)] mt-1">
                   {teamMembers.filter(m => m.status === 'active').length}
                 </p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-[#D1FAE5] flex items-center justify-center">
-                <Shield className="w-6 h-6 text-[#10B981]" />
+              <div className="w-10 h-10 xs:w-12 xs:h-12 rounded-xl bg-[var(--color-success-light)] flex items-center justify-center">
+                <Shield className="w-5 h-5 xs:w-6 xs:h-6 text-[var(--color-success)]" />
               </div>
             </div>
           </Card>
@@ -220,13 +171,13 @@ export const Team: React.FC = () => {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-[#64748B] uppercase tracking-wide">Pending</p>
-                <p className="text-3xl font-bold text-[#1E1E2E] mt-1">
+                <p className="text-xs xs:text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Pending</p>
+                <p className="text-2xl xs:text-3xl font-bold text-[var(--color-title)] mt-1">
                   {teamMembers.filter(m => m.status === 'pending').length}
                 </p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-[#FEF3C7] flex items-center justify-center">
-                <Mail className="w-6 h-6 text-[#F59E0B]" />
+              <div className="w-10 h-10 xs:w-12 xs:h-12 rounded-xl bg-[var(--color-warning-light)] flex items-center justify-center">
+                <Mail className="w-5 h-5 xs:w-6 xs:h-6 text-[var(--color-warning)]" />
               </div>
             </div>
           </Card>
@@ -234,13 +185,13 @@ export const Team: React.FC = () => {
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-[#64748B] uppercase tracking-wide">Admins</p>
-                <p className="text-3xl font-bold text-[#1E1E2E] mt-1">
+                <p className="text-xs xs:text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Admins</p>
+                <p className="text-2xl xs:text-3xl font-bold text-[var(--color-title)] mt-1">
                   {teamMembers.filter(m => m.role === 'admin').length}
                 </p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-[#CFFAFE] flex items-center justify-center">
-                <Shield className="w-6 h-6 text-[#06B6D4]" />
+              <div className="w-10 h-10 xs:w-12 xs:h-12 rounded-xl bg-[var(--color-info-light)] flex items-center justify-center">
+                <Shield className="w-5 h-5 xs:w-6 xs:h-6 text-[var(--color-info)]" />
               </div>
             </div>
           </Card>
@@ -248,13 +199,14 @@ export const Team: React.FC = () => {
 
         {/* Filters */}
         <Card className="p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4">
             <Input
               type="text"
               placeholder="Search by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               icon={<Search size={18} />}
+              aria-label="Search team members"
             />
             <Select
               value={roleFilter}
@@ -265,6 +217,7 @@ export const Team: React.FC = () => {
                 { value: 'editor', label: 'Editor' },
                 { value: 'viewer', label: 'Viewer' },
               ]}
+              aria-label="Filter by role"
             />
             <Select
               value={statusFilter}
@@ -275,6 +228,7 @@ export const Team: React.FC = () => {
                 { value: 'pending', label: 'Pending' },
                 { value: 'inactive', label: 'Inactive' },
               ]}
+              aria-label="Filter by status"
             />
           </div>
         </Card>
@@ -283,28 +237,19 @@ export const Team: React.FC = () => {
       {/* Results count */}
       {searchQuery && (
         <div className="mb-4">
-          <p className="text-sm text-[#64748B]">
-            Found <span className="font-semibold text-[#1E1E2E]">{filteredMembers.length}</span> member{filteredMembers.length !== 1 ? 's' : ''}
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            Found <span className="font-semibold text-[var(--color-text)]">{filteredMembers.length}</span> {pluralize(filteredMembers.length, 'member')}
           </p>
         </div>
       )}
 
       {/* Team Table */}
-      {filteredMembers.length === 0 ? (
-        <Card className="text-center py-16">
-          <div className="flex flex-col items-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#F8F9FB] flex items-center justify-center mb-4">
-              <UsersIcon className="w-8 h-8 text-[#94A3B8]" />
-            </div>
-            <p className="text-[#1E1E2E] text-lg font-semibold mb-2">No team members found</p>
-            <p className="text-[#64748B] text-sm">
-              Try adjusting your search or filters
-            </p>
-          </div>
-        </Card>
-      ) : (
-        <Table data={filteredMembers} columns={columns} />
-      )}
+      <Table
+        data={filteredMembers}
+        columns={columns}
+        emptyStateTitle="No team members found"
+        emptyStateDescription="Try adjusting your search or filters"
+      />
 
       <InviteUserModal
         isOpen={isInviteModalOpen}

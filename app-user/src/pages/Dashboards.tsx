@@ -3,36 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import { Search, FileText, Clock, Globe, Filter } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { EmptyState } from '../components/feedback/EmptyState';
 import { dashboards } from '../data/dashboards';
+import { formatDate, pluralize } from '../utils/formatters';
+import { useDebounce } from '../hooks/useDebounce';
 
 export const Dashboards: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
   const filteredDashboards = dashboards.filter(
     (dashboard) =>
-      dashboard.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      dashboard.description.toLowerCase().includes(searchQuery.toLowerCase())
+      dashboard.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      dashboard.description.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
 
   return (
     <div className="animate-fadeIn">
       {/* Header Section */}
-      <div className="mb-10">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
+      <div className="mb-6 xs:mb-8 md:mb-10">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 xs:gap-6 mb-6 xs:mb-8">
           <div className="flex-1">
-            <h1 className="text-4xl font-bold text-[var(--color-title)] tracking-tight mb-3">
+            <h1 className="text-2xl xs:text-3xl md:text-4xl font-bold text-[var(--color-title)] tracking-tight mb-2 xs:mb-3">
               Reports Dashboard
             </h1>
-            <p className="text-base text-[var(--color-text-secondary)] font-medium leading-relaxed">
+            <p className="text-sm xs:text-base text-[var(--color-text-secondary)] font-medium leading-relaxed">
               Access and manage your analytics and business intelligence reports
             </p>
           </div>
@@ -41,25 +37,27 @@ export const Dashboards: React.FC = () => {
             size="lg"
             icon={<FileText size={20} strokeWidth={2} />}
             className="whitespace-nowrap shadow-lg hover:shadow-xl transition-all duration-200"
+            aria-label="Request a new report"
           >
             Request a Report
           </Button>
         </div>
 
         {/* Enhanced Search and Filter Bar */}
-        <Card className="p-6" elevated>
-          <div className="flex flex-col md:flex-row gap-4">
+        <Card className="p-4 xs:p-6" elevated>
+          <div className="flex flex-col md:flex-row gap-3 xs:gap-4">
             {/* Search Input */}
             <div className="flex-1 relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                <Search size={20} className="text-[var(--color-text-muted)]" strokeWidth={2} />
+              <div className="absolute left-3 xs:left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                <Search size={18} className="text-[var(--color-text-muted)] xs:w-5 xs:h-5" strokeWidth={2} />
               </div>
               <input
                 type="text"
                 placeholder="Search by title, description, or keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-[var(--color-background)] border border-[var(--color-border)] rounded-xl text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all duration-200"
+                aria-label="Search reports"
+                className="w-full pl-10 xs:pl-12 pr-3 xs:pr-4 py-2.5 xs:py-3.5 bg-[var(--color-background)] border border-[var(--color-border)] rounded-xl text-sm xs:text-base text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] font-medium focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all duration-200"
               />
             </div>
 
@@ -69,6 +67,7 @@ export const Dashboards: React.FC = () => {
               size="lg"
               icon={<Filter size={18} strokeWidth={2} />}
               className="md:w-auto"
+              aria-label="Open filters"
             >
               Filters
             </Button>
@@ -76,9 +75,9 @@ export const Dashboards: React.FC = () => {
 
           {/* Search Results Count */}
           {searchQuery && (
-            <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
-              <p className="text-sm text-[var(--color-text-muted)] font-medium">
-                Found <span className="font-bold text-[var(--color-primary)]">{filteredDashboards.length}</span> {filteredDashboards.length !== 1 ? 'reports' : 'report'} matching your search
+            <div className="mt-3 xs:mt-4 pt-3 xs:pt-4 border-t border-[var(--color-border)]">
+              <p className="text-xs xs:text-sm text-[var(--color-text-muted)] font-medium">
+                Found <span className="font-bold text-[var(--color-primary)]">{filteredDashboards.length}</span> {pluralize(filteredDashboards.length, 'report')} matching your search
               </p>
             </div>
           )}
@@ -87,27 +86,26 @@ export const Dashboards: React.FC = () => {
 
       {/* Reports Grid */}
       {filteredDashboards.length === 0 ? (
-        <Card className="text-center py-20" elevated>
-          <div className="flex flex-col items-center max-w-md mx-auto">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-accent)]/10 flex items-center justify-center mb-6 shadow-sm">
-              <Search className="w-10 h-10 text-[var(--color-text-muted)]" strokeWidth={1.5} />
-            </div>
-            <h3 className="text-xl font-bold text-[var(--color-title)] mb-3">No Reports Found</h3>
-            <p className="text-base text-[var(--color-text-muted)] font-medium leading-relaxed">
-              {searchQuery
+        <Card elevated>
+          <EmptyState
+            icon={<Search size={48} className="text-[var(--color-text-muted)]" strokeWidth={1.5} />}
+            title="No Reports Found"
+            description={
+              searchQuery
                 ? "We couldn't find any reports matching your search criteria. Try adjusting your filters or search terms."
-                : "No reports are currently available. Request a new report to get started."}
-            </p>
-          </div>
+                : "No reports are currently available. Request a new report to get started."
+            }
+          />
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 xs:gap-5 md:gap-6">
           {filteredDashboards.map((dashboard) => (
             <Card
               key={dashboard.id}
               hover
               noPadding
               onClick={() => navigate(`/app/reports/${dashboard.id}`)}
+              aria-label={`View ${dashboard.title} report`}
               className="group overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl"
             >
               {/* Thumbnail */}
@@ -121,23 +119,23 @@ export const Dashboards: React.FC = () => {
               </div>
 
               {/* Content */}
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-[var(--color-title)] mb-2 line-clamp-1 group-hover:text-[var(--color-primary)] transition-colors">
+              <div className="p-4 xs:p-5 md:p-6">
+                <h3 className="text-base xs:text-lg font-bold text-[var(--color-title)] mb-2 line-clamp-1 group-hover:text-[var(--color-primary)] transition-colors">
                   {dashboard.title}
                 </h3>
-                <p className="text-sm text-[var(--color-text-secondary)] mb-5 line-clamp-2 font-medium leading-relaxed">
+                <p className="text-xs xs:text-sm text-[var(--color-text-secondary)] mb-4 xs:mb-5 line-clamp-2 font-medium leading-relaxed">
                   {dashboard.description}
                 </p>
 
                 {/* Metadata Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-[var(--color-border)]">
-                  <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)] font-medium">
-                    <Clock size={14} strokeWidth={2} />
+                <div className="flex items-center justify-between pt-3 xs:pt-4 border-t border-[var(--color-border)]">
+                  <div className="flex items-center gap-1.5 xs:gap-2 text-xs text-[var(--color-text-muted)] font-medium">
+                    <Clock size={12} className="xs:w-3.5 xs:h-3.5" strokeWidth={2} />
                     <span>{formatDate(dashboard.updatedAt)}</span>
                   </div>
                   {dashboard.isPublic && (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-success-light)] border border-[var(--color-success-border)] text-[var(--color-success)] rounded-lg text-xs font-bold">
-                      <Globe size={12} strokeWidth={2.5} />
+                    <div className="flex items-center gap-1 xs:gap-1.5 px-2 xs:px-3 py-1 xs:py-1.5 bg-[var(--color-success-light)] border border-[var(--color-success-border)] text-[var(--color-success)] rounded-lg text-xs font-bold">
+                      <Globe size={10} className="xs:w-3 xs:h-3" strokeWidth={2.5} />
                       <span>Public</span>
                     </div>
                   )}

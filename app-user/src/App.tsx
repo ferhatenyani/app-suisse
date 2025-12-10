@@ -12,6 +12,7 @@ const Dashboards = lazy(() => import('./pages/Dashboards').then(m => ({ default:
 const DashboardViewer = lazy(() => import('./pages/DashboardViewer').then(m => ({ default: m.DashboardViewer })));
 const Team = lazy(() => import('./pages/Team').then(m => ({ default: m.Team })));
 const Profile = lazy(() => import('./pages/Profile').then(m => ({ default: m.Profile })));
+const Notifications = lazy(() => import('./pages/Notifications').then(m => ({ default: m.Notifications })));
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
               <Route path="team" element={<Team />} />
             )}
             <Route path="profile" element={<Profile />} />
+            <Route path="notifications" element={<Notifications />} />
           </Route>
 
           {/* 404 - Catch all unknown routes */}

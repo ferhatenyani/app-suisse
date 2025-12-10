@@ -1,179 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Settings, LogOut, ChevronDown, Search, Bell, ChevronRight } from 'lucide-react';
-import { Avatar } from '../ui/Avatar';
-import { SettingsModal } from '../ui/SettingsModal';
-import { currentUser } from '../../data/currentUser';
+import React from 'react';
+import { Bell, User } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+const routeTitles: Record<string, string> = {
+  '/app/dashboard': 'Dashboard',
+  '/app/dashboards': 'Dashboards',
+  '/app/team': 'Team',
+  '/app/profile': 'Profile Settings',
+  '/app/notifications': 'Notifications',
+};
 
 export const TopNav: React.FC = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  // Close dropdown when route changes
-  useEffect(() => {
-    setIsDropdownOpen(false);
-  }, [location.pathname]);
-
-  // Close dropdown on Escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isDropdownOpen) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isDropdownOpen]);
-
-  const handleLogout = () => {
-    // Mock logout
-    console.log('Logging out...');
-    navigate('/login');
-  };
-
-  const generateBreadcrumbs = () => {
-    const paths = location.pathname.split('/').filter(Boolean);
-    const breadcrumbs: { label: string; path: string }[] = [];
-
-    paths.forEach((segment, index) => {
-      const path = '/' + paths.slice(0, index + 1).join('/');
-      let label = segment.charAt(0).toUpperCase() + segment.slice(1);
-
-      if (segment === 'app') return;
-      if (segment === 'dashboard') label = 'Dashboard';
-      if (segment === 'reports') label = 'Reports';
-
-      breadcrumbs.push({ label, path });
-    });
-
-    return breadcrumbs;
-  };
-
-  const breadcrumbs = generateBreadcrumbs();
+  const navigate = useNavigate();
+  const pageTitle = routeTitles[location.pathname] || 'Dashboard';
 
   return (
-    <>
-      <header className="sticky top-0 z-30 bg-white border-b border-[var(--color-border)] shadow-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between gap-6">
-            {/* Left: Breadcrumbs */}
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <div className="lg:hidden w-10" />
-              {breadcrumbs.length > 0 && (
-                <nav className="hidden md:flex items-center gap-2 text-sm">
-                  {breadcrumbs.map((crumb, index) => (
-                    <React.Fragment key={crumb.path}>
-                      {index > 0 && <ChevronRight size={16} className="text-[var(--color-text-muted)]" />}
-                      {index === breadcrumbs.length - 1 ? (
-                        <span className="text-[var(--color-title)] font-semibold truncate">
-                          {crumb.label}
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => navigate(crumb.path)}
-                          className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] font-medium transition-colors truncate"
-                        >
-                          {crumb.label}
-                        </button>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </nav>
-              )}
-            </div>
-
-            {/* Right: Search, User */}
-            <div className="flex items-center gap-3">
-              {/* Search Bar - visible from md+ (768px) */}
-              <div className="hidden md:flex items-center gap-2.5 px-3 xs:px-4 py-2 bg-[var(--color-panel)] border border-[var(--color-border)] rounded-xl w-56 md:w-64 lg:w-72 hover:border-[var(--color-primary)] focus-within:border-[var(--color-primary)] transition-colors">
-                <Search size={16} className="text-[var(--color-text-muted)]" strokeWidth={2} />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  aria-label="Search reports and content"
-                  className="flex-1 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none font-medium"
-                />
-              </div>
-
-              {/* User menu */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  aria-label="User menu"
-                  aria-expanded={isDropdownOpen}
-                  aria-haspopup="true"
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-[var(--color-surface-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
-                >
-                  <Avatar
-                    src={currentUser.avatar}
-                    name={currentUser.name}
-                    size="sm"
-                  />
-                  <ChevronDown
-                    size={16}
-                    className={`text-[var(--color-text-muted)] transition-transform ${
-                      isDropdownOpen ? 'rotate-180' : ''
-                    }`}
-                  />
-                </button>
-
-                {/* Dropdown menu */}
-                {isDropdownOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setIsDropdownOpen(false)}
-                      role="presentation"
-                      aria-hidden="true"
-                    />
-                    <div
-                      className="absolute right-0 mt-3 w-60 bg-white rounded-xl border border-[var(--color-border)] py-2 z-20 shadow-xl animate-scaleIn"
-                      role="menu"
-                      aria-orientation="vertical"
-                    >
-                      <div className="px-4 py-3 border-b border-[var(--color-border)]">
-                        <p className="text-sm font-bold text-[var(--color-title)] truncate">
-                          {currentUser.name}
-                        </p>
-                        <p className="text-xs text-[var(--color-text-muted)] truncate font-medium mt-0.5">{currentUser.email}</p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          navigate('/app/profile');
-                          setIsDropdownOpen(false);
-                        }}
-                        role="menuitem"
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] transition-colors focus-visible:outline-none focus-visible:bg-[var(--color-surface-hover)]"
-                      >
-                        <Settings size={16} className="text-[var(--color-text-muted)]" strokeWidth={2} />
-                        Settings
-                      </button>
-                      <div className="border-t border-[var(--color-border)] mt-1 pt-1">
-                        <button
-                          onClick={handleLogout}
-                          role="menuitem"
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-[var(--color-danger)] hover:bg-[var(--color-danger-light)] transition-colors focus-visible:outline-none focus-visible:bg-[var(--color-danger-light)]"
-                        >
-                          <LogOut size={16} strokeWidth={2} />
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+    <header className="sticky top-0 z-30 bg-white shadow-sm">
+      <div className="flex items-center justify-between h-16 px-4 lg:px-8 border-b border-[var(--color-border)]">
+        {/* Left - Page Title */}
+        <div className="flex-1 min-w-0">
+          <h2 className="text-lg font-bold text-[var(--color-title)] tracking-tight truncate">
+            {pageTitle}
+          </h2>
         </div>
-      </header>
 
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
-    </>
+        {/* Right - Notifications, Settings */}
+        <div className="flex items-center gap-3">
+          {/* Notifications */}
+          <button
+            onClick={() => navigate('/app/notifications')}
+            className="relative p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-title)] hover:bg-[var(--color-surface-hover)] rounded-md transition-colors"
+            aria-label="Notifications"
+          >
+            <Bell size={20} strokeWidth={1.5} />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--color-danger)] rounded-full border-2 border-white"></span>
+          </button>
+
+          {/* Profile */}
+          <button
+            onClick={() => navigate('/app/profile')}
+            className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-title)] hover:bg-[var(--color-surface-hover)] rounded-md transition-colors"
+            aria-label="Profile"
+          >
+            <User size={20} strokeWidth={1.5} />
+          </button>
+        </div>
+      </div>
+    </header>
   );
 };

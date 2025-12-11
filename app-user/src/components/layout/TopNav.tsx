@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Bell, User, Languages } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useNotifications } from '../../contexts/NotificationContext';
 
 const routeTitles: Record<string, string> = {
   '/app/dashboard': 'Dashboard',
@@ -14,6 +15,7 @@ export const TopNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [language, setLanguage] = useState<'en' | 'fr'>('en');
+  const { unreadCount } = useNotifications();
   const pageTitle = routeTitles[location.pathname] || 'Dashboard';
 
   const toggleLanguage = () => {
@@ -56,7 +58,9 @@ export const TopNav: React.FC = () => {
             aria-label="Notifications"
           >
             <Bell size={20} strokeWidth={1.5} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--color-danger)] rounded-full border-2 border-white"></span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--color-danger)] rounded-full border-2 border-white"></span>
+            )}
           </button>
 
           {/* Profile */}

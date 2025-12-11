@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
 import { LoadingState } from './components/feedback/LoadingState';
 import { currentUser } from './data/currentUser';
+import { NotificationProvider } from './contexts/NotificationContext';
 
 // Lazy load all page components for code splitting and better performance
 const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
@@ -18,36 +19,38 @@ const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.N
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">
-          <LoadingState size="lg" text="Loading..." />
-        </div>
-      }>
-        <Routes>
-          {/* Root redirect to login */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+      <NotificationProvider>
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">
+            <LoadingState size="lg" text="Loading..." />
+          </div>
+        }>
+          <Routes>
+            {/* Root redirect to login */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* Auth Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
-          {/* App Routes */}
-          <Route path="/app" element={<AppLayout />}>
-            <Route index element={<Navigate to="/app/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="reports" element={<Dashboards />} />
-            <Route path="reports/:id" element={<DashboardViewer />} />
-            {currentUser.role === 'organization' && (
-              <Route path="team" element={<Team />} />
-            )}
-            <Route path="profile" element={<Profile />} />
-            <Route path="notifications" element={<Notifications />} />
-          </Route>
+            {/* App Routes */}
+            <Route path="/app" element={<AppLayout />}>
+              <Route index element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="reports" element={<Dashboards />} />
+              <Route path="reports/:id" element={<DashboardViewer />} />
+              {currentUser.role === 'organization' && (
+                <Route path="team" element={<Team />} />
+              )}
+              <Route path="profile" element={<Profile />} />
+              <Route path="notifications" element={<Notifications />} />
+            </Route>
 
-          {/* 404 - Catch all unknown routes */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+            {/* 404 - Catch all unknown routes */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </NotificationProvider>
     </BrowserRouter>
   );
 }

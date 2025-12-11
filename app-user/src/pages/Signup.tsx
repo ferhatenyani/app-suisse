@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LayoutGrid, User, Mail, Lock, Building2, ArrowRight } from 'lucide-react';
 import { Input } from '../components/ui/Input';
@@ -15,6 +15,10 @@ export const Signup: React.FC = () => {
     confirmPassword: '',
     companyName: '',
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });

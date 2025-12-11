@@ -51,10 +51,23 @@ export const TicketThread: React.FC<TicketThreadProps> = ({
   const [newMessage, setNewMessage] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const previousMessageCountRef = useRef(ticket.messages.length);
 
-  // Scroll to bottom when messages change
+  // Scroll to top when component mounts or ticket changes
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) mainElement.scrollTo(0, 0);
+    // Reset the message count when ticket changes
+    previousMessageCountRef.current = ticket.messages.length;
+  }, [ticket.id]);
+
+  // Scroll to bottom only when NEW messages are added (not on initial load)
+  useEffect(() => {
+    if (ticket.messages.length > previousMessageCountRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+    previousMessageCountRef.current = ticket.messages.length;
   }, [ticket.messages]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

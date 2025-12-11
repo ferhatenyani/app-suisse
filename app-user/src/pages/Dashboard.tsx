@@ -158,6 +158,12 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const isOrganization = currentUser.role === 'organization';
 
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) mainElement.scrollTo(0, 0);
+  }, []);
+
   // Calculate real stats from data with error handling
   const totalReports = dashboards.length;
   const publicReports = dashboards.filter(d => d.isPublic).length;

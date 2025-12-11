@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../components/ui/Button';
 import { CreateTicketModal } from '../components/support/CreateTicketModal';
 import type { TicketFormData } from '../components/support/CreateTicketModal';
@@ -102,6 +102,12 @@ export const ContactSupport: React.FC = () => {
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
 
   const selectedTicket = tickets.find(t => t.id === selectedTicketId);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) mainElement.scrollTo(0, 0);
+  }, []);
 
   // Generate a unique ticket ID
   const generateTicketId = (): string => {

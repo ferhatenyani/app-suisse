@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, FileText, Clock, Globe, Filter } from 'lucide-react';
 import { Card } from '../components/ui/Card';
@@ -12,6 +12,12 @@ export const Dashboards: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 300);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) mainElement.scrollTo(0, 0);
+  }, []);
 
   const filteredDashboards = dashboards.filter(
     (dashboard) =>

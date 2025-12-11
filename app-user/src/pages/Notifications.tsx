@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { useNotifications } from '../contexts/NotificationContext';
@@ -73,6 +73,12 @@ const formatTimestamp = (date: Date) => {
 export const Notifications: React.FC = () => {
   const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, clearAll } = useNotifications();
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) mainElement.scrollTo(0, 0);
+  }, []);
 
   const filteredNotifications = notifications.filter((n) => {
     if (filter === 'unread') return !n.read;

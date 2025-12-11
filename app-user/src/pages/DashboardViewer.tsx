@@ -22,6 +22,12 @@ export const DashboardViewer: React.FC = () => {
 
   const dashboard = dashboards.find((d) => d.id === id);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) mainElement.scrollTo(0, 0);
+  }, [id]);
+
   // Handle fullscreen for iframe container only
   const toggleFullscreen = async () => {
     if (!iframeContainerRef.current) return;

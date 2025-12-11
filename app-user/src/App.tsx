@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
+import { ScrollToTop } from './components/layout/ScrollToTop';
 import { LoadingState } from './components/feedback/LoadingState';
 import { currentUser } from './data/currentUser';
 import { NotificationProvider } from './contexts/NotificationContext';
@@ -20,6 +21,7 @@ const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.N
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <NotificationProvider>
         <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">

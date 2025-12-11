@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Camera, Save, X, User as UserIcon, Mail, Building2, Lock, Calendar, Shield } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
@@ -17,6 +17,12 @@ export const Profile: React.FC = () => {
     avatar: currentUser.avatar || '',
   });
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) mainElement.scrollTo(0, 0);
+  }, []);
 
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });

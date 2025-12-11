@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserPlus, Search, Mail, Trash2, Users as UsersIcon, Shield, Eye, Edit3 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
@@ -24,6 +24,12 @@ export const Team: React.FC = () => {
   const [members, setMembers] = useState<TeamMember[]>(teamMembers);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const mainElement = document.querySelector('main');
+    if (mainElement) mainElement.scrollTo(0, 0);
+  }, []);
 
   const filteredMembers = members.filter((member) => {
     const matchesSearch =

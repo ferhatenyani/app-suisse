@@ -129,7 +129,7 @@ export const DashboardViewer: React.FC = () => {
                 <button
                   onClick={() => navigate('/app/dashboards')}
                   aria-label="Go back to reports list"
-                  className="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors mb-2 xs:mb-3 md:mb-4 group"
+                  className="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors mb-1.5 xs:mb-2 md:mb-4 group"
                 >
                   <ArrowLeft size={16} className="xs:w-[18px] xs:h-[18px] group-hover:-translate-x-1 transition-transform" strokeWidth={2} />
                   <span className="font-bold text-xs xs:text-sm">Back to Reports</span>
@@ -143,7 +143,7 @@ export const DashboardViewer: React.FC = () => {
               </div>
 
               {/* Right: Action Buttons */}
-              <div className="flex flex-wrap gap-2 xs:gap-2.5">
+              <div className="flex flex-wrap justify-center xl:justify-start gap-2 xs:gap-2.5">
                 <Button
                   variant="outline"
                   size="md"
@@ -184,7 +184,7 @@ export const DashboardViewer: React.FC = () => {
                 >
                   <span className="hidden sm:inline">Export</span>
                 </Button>
-                
+
               </div>
             </div>
           </div>

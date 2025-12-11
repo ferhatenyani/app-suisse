@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Users, User, Menu, X } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Users, User, LifeBuoy, Menu, X, Bell } from 'lucide-react';
 import { currentUser } from '../../data/currentUser';
 
 interface NavItem {
@@ -33,6 +33,16 @@ export const Sidebar: React.FC = () => {
       label: 'Team',
       icon: <Users size={20} strokeWidth={1.5} />,
       roles: ['organization'],
+    },
+    {
+      path: '/app/support',
+      label: 'Support',
+      icon: <LifeBuoy size={20} strokeWidth={1.5} />,
+    },
+    {
+      path: '/app/notifications',
+      label: 'Notifications',
+      icon: <Bell size={20} strokeWidth={1.5} />,
     },
     {
       path: '/app/profile',

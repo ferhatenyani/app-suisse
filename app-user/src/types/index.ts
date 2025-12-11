@@ -64,6 +64,47 @@ export interface BadgeProps {
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
+// Support Ticket Types
+export type TicketCategory =
+  | 'request_new_report'
+  | 'technical_issue'
+  | 'feature_request'
+  | 'billing'
+  | 'other';
+
+export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export type TicketStatus = 'new' | 'open' | 'in_progress' | 'resolved' | 'closed';
+
+export interface TicketMessage {
+  id: string;
+  sender: 'user' | 'admin';
+  senderName: string;
+  text: string;
+  attachments?: TicketAttachment[];
+  createdAt: string;
+}
+
+export interface TicketAttachment {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  category: TicketCategory;
+  customCategory?: string;
+  priority: TicketPriority;
+  status: TicketStatus;
+  subject: string;
+  messages: TicketMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Utility Types
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type Nullable<T> = T | null | undefined;

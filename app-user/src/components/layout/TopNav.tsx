@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Bell, User, Languages } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNotifications } from '../../contexts/NotificationContext';
+import { NavigationControls } from '../navigation/NavigationControls';
 
 const routeTitles: Record<string, string> = {
   '/app/dashboard': 'Dashboard',
@@ -9,6 +10,7 @@ const routeTitles: Record<string, string> = {
   '/app/team': 'Team',
   '/app/profile': 'Profile Settings',
   '/app/notifications': 'Notifications',
+  '/app/support': 'Contact Support',
 };
 
 export const TopNav: React.FC = () => {
@@ -25,8 +27,9 @@ export const TopNav: React.FC = () => {
   return (
     <header className="sticky top-0 z-30 bg-white shadow-sm">
       <div className="flex items-center justify-between h-16 px-4 lg:px-8 border-b border-[var(--color-border)]">
-        {/* Left - Page Title */}
-        <div className="flex-1 min-w-0">
+        {/* Left - Page Title & Navigation Controls */}
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <NavigationControls className="hidden sm:flex" />
           <h2 className="text-lg font-bold text-[var(--color-title)] tracking-tight truncate">
             {pageTitle}
           </h2>

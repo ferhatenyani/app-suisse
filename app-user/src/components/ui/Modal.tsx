@@ -50,7 +50,7 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal */}
       <div
-        className={`relative bg-white rounded-xl sm:rounded-2xl shadow-modal w-full ${sizes[size]} min-w-[280px] sm:min-w-[500px] md:min-w-[600px] max-h-[90vh] overflow-hidden flex flex-col animate-scaleIn mx-auto`}
+        className={`relative bg-white rounded-xl sm:rounded-2xl shadow-modal w-full ${sizes[size]} min-w-[320px] sm:min-w-[500px] md:min-w-[600px] max-h-[90vh] overflow-hidden flex flex-col animate-scaleIn mx-auto`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 border-b border-[#E5E9F0]">

@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { PowerBiPlaceholder } from '../components/ui/PowerBiPlaceholder';
 import { ShareModal } from '../components/modals/ShareModal';
+import { ExportModal } from '../components/modals/ExportModal';
 import { dashboards } from '../data/dashboards';
 import { getMockDataForDashboard } from '../data/dashboardMocks';
 
@@ -13,6 +14,7 @@ export const DashboardViewer: React.FC = () => {
   const navigate = useNavigate();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -72,21 +74,47 @@ export const DashboardViewer: React.FC = () => {
   };
 
   // Handle export button
-  const handleExport = () => {
+  const handleExport = (format: 'pdf' | 'image' | 'json') => {
     // Mock export functionality - in real app, this would trigger actual export
     const exportData = {
       dashboard: dashboard?.title,
       exportedAt: new Date().toISOString(),
-      format: 'PDF',
+      format: format.toUpperCase(),
     };
     console.log('Exporting dashboard:', exportData);
 
+    // Determine file extension and MIME type based on format
+    let fileExtension = '';
+    let mimeType = '';
+    let fileContent: Blob;
+
+    switch (format) {
+      case 'pdf':
+        fileExtension = 'pdf';
+        mimeType = 'application/pdf';
+        fileContent = new Blob([JSON.stringify(exportData, null, 2)], { type: mimeType });
+        break;
+      case 'image':
+        fileExtension = 'png';
+        mimeType = 'image/png';
+        fileContent = new Blob([JSON.stringify(exportData, null, 2)], { type: mimeType });
+        break;
+      case 'json':
+        fileExtension = 'json';
+        mimeType = 'application/json';
+        fileContent = new Blob([JSON.stringify(exportData, null, 2)], { type: mimeType });
+        break;
+      default:
+        fileExtension = 'json';
+        mimeType = 'application/json';
+        fileContent = new Blob([JSON.stringify(exportData, null, 2)], { type: mimeType });
+    }
+
     // Simulate download
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(fileContent);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${dashboard?.title || 'dashboard'}-export-${Date.now()}.json`;
+    link.download = `${dashboard?.title || 'dashboard'}-export-${Date.now()}.${fileExtension}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -186,7 +214,7 @@ export const DashboardViewer: React.FC = () => {
                   variant="outline"
                   size="md"
                   icon={<Download size={16} strokeWidth={2} />}
-                  onClick={handleExport}
+                  onClick={() => setIsExportModalOpen(true)}
                   aria-label="Export report"
                   className="flex-shrink-0"
                 >
@@ -207,16 +235,16 @@ export const DashboardViewer: React.FC = () => {
         >
           {/* Fullscreen Exit Button */}
           {isFullscreen && (
-            <div className="absolute top-4 right-4 z-50">
+            <div className="absolute top-3 right-3 z-50">
               <Button
                 variant="primary"
-                size="lg"
+                size="sm"
                 icon={<X size={20} strokeWidth={2} />}
                 onClick={exitFullscreen}
                 aria-label="Exit fullscreen mode"
                 className="shadow-2xl"
               >
-                Exit Fullscreen
+                 
               </Button>
             </div>
           )}
@@ -262,7 +290,12 @@ export const DashboardViewer: React.FC = () => {
         dashboardUrl={dashboardUrl}
       />
 
-      
+      <ExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        dashboardTitle={dashboard.title}
+        onExport={handleExport}
+      />
     </>
   );
 };

@@ -32,7 +32,7 @@ export const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   const sizes = {
-    sm: 'max-w-lg',
+    sm: 'max-w-md',
     md: 'max-w-2xl',
     lg: 'max-w-3xl',
     xl: 'max-w-5xl',
@@ -43,13 +43,13 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-[#1E1E2E] bg-opacity-60 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal */}
       <div
-        className={`relative bg-white rounded-2xl shadow-modal w-full ${sizes[size]} max-h-[90vh] overflow-hidden flex flex-col animate-scaleIn`}
+        className={`relative bg-white rounded-2xl shadow-modal w-[calc(100%-2rem)] ${sizes[size]} min-w-[280px] sm:min-w-[400px] max-h-[90vh] overflow-hidden flex flex-col animate-scaleIn`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-[#E5E9F0]">

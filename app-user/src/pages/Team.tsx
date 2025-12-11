@@ -20,8 +20,9 @@ export const Team: React.FC = () => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [members, setMembers] = useState<TeamMember[]>(teamMembers);
 
-  const filteredMembers = teamMembers.filter((member) => {
+  const filteredMembers = members.filter((member) => {
     const matchesSearch =
       member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.email.toLowerCase().includes(searchQuery.toLowerCase());
@@ -57,7 +58,9 @@ export const Team: React.FC = () => {
   };
 
   const confirmDelete = () => {
-    console.log('Deleting member:', selectedMember);
+    if (selectedMember) {
+      setMembers(members.filter(member => member.id !== selectedMember.id));
+    }
     setSelectedMember(null);
   };
 
@@ -84,9 +87,9 @@ export const Team: React.FC = () => {
       accessor: (row: TeamMember) => getStatusBadge(row.status),
     },
     {
-      header: 'Joined Date',
+      header: 'Joined on',
       accessor: (row: TeamMember) => (
-        <span className="text-sm text-[var(--color-text-secondary)]">{formatDate(row.joinedAt)}</span>
+        <span className="text-sm text-[var(--color-text-secondary)] whitespace-nowrap">{formatDate(row.joinedAt)}</span>
       ),
     },
     {
@@ -145,7 +148,7 @@ export const Team: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide mb-1">Total Members</p>
-                <p className="text-2xl font-semibold text-[var(--color-title)] tracking-tight">{teamMembers.length}</p>
+                <p className="text-2xl font-semibold text-[var(--color-title)] tracking-tight">{members.length}</p>
               </div>
               <div className="w-10 h-10 rounded-md bg-[var(--color-panel)] flex items-center justify-center">
                 <UsersIcon size={18} className="text-[var(--color-text-muted)]" strokeWidth={1.5} />
@@ -158,7 +161,7 @@ export const Team: React.FC = () => {
               <div>
                 <p className="text-xs xs:text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Active</p>
                 <p className="text-2xl xs:text-3xl font-bold text-[var(--color-title)] mt-1">
-                  {teamMembers.filter(m => m.status === 'active').length}
+                  {members.filter(m => m.status === 'active').length}
                 </p>
               </div>
               <div className="w-10 h-10 xs:w-12 xs:h-12 rounded-xl bg-[var(--color-success-light)] flex items-center justify-center">
@@ -172,7 +175,7 @@ export const Team: React.FC = () => {
               <div>
                 <p className="text-xs xs:text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Pending</p>
                 <p className="text-2xl xs:text-3xl font-bold text-[var(--color-title)] mt-1">
-                  {teamMembers.filter(m => m.status === 'pending').length}
+                  {members.filter(m => m.status === 'pending').length}
                 </p>
               </div>
               <div className="w-10 h-10 xs:w-12 xs:h-12 rounded-xl bg-[var(--color-warning-light)] flex items-center justify-center">
@@ -186,7 +189,7 @@ export const Team: React.FC = () => {
               <div>
                 <p className="text-xs xs:text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Admins</p>
                 <p className="text-2xl xs:text-3xl font-bold text-[var(--color-title)] mt-1">
-                  {teamMembers.filter(m => m.role === 'admin').length}
+                  {members.filter(m => m.role === 'admin').length}
                 </p>
               </div>
               <div className="w-10 h-10 xs:w-12 xs:h-12 rounded-xl bg-[var(--color-info-light)] flex items-center justify-center">

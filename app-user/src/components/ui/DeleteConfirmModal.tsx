@@ -26,58 +26,52 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={title}
-      size="lg"
-      footer={
-        <div className="flex flex-col sm:flex-row gap-4 w-full">
+    <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
+      <div className="space-y-5">
+        {/* Warning Icon */}
+        <div className="flex justify-center">
+          <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+            <AlertTriangle size={32} className="text-red-600" />
+          </div>
+        </div>
+
+        {/* Message */}
+        <div className="text-center space-y-2">
+          <p className="text-[var(--color-text)] text-sm leading-relaxed">
+            {message}
+          </p>
+          {itemName && (
+            <p className="text-sm font-semibold text-[var(--color-title)] bg-gray-100 px-3 py-2 rounded-md inline-block">
+              {itemName}
+            </p>
+          )}
+        </div>
+
+        {/* Warning Notice */}
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+          <p className="text-xs text-red-800 font-medium">
+            This action is permanent and cannot be undone. All associated data will be permanently removed.
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 pt-2">
           <Button
             variant="outline"
             onClick={onClose}
-            className="flex-1 sm:flex-none sm:min-w-[160px] justify-center py-3 text-base"
+            className="flex-1"
           >
             Cancel
           </Button>
           <Button
             variant="danger"
             onClick={handleConfirm}
-            icon={<Trash2 size={20} />}
-            className="flex-1 sm:flex-none sm:min-w-[220px] justify-center py-3 text-base"
+            icon={<Trash2 size={16} />}
+            className="flex-1"
           >
-            Delete Permanently
+            Delete
           </Button>
         </div>
-      }
-    >
-      <div className="space-y-7">
-        {/* Warning Banner */}
-        <div className="flex items-start gap-5 p-6 sm:p-7 bg-gradient-to-br from-[#FEE2E2] to-[#FEE2E2]/80 rounded-2xl border border-[#EF4444]/20 shadow-sm transition-all">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
-            <AlertTriangle className="text-[#EF4444]" size={28} />
-          </div>
-          <div className="flex-1 min-w-0 pt-1.5">
-            <p className="text-lg sm:text-xl font-semibold text-[#1E1E2E] mb-2.5 leading-tight">
-              This action cannot be undone
-            </p>
-            <p className="text-base sm:text-lg text-[#64748B] leading-relaxed">
-              {message}
-            </p>
-          </div>
-        </div>
-
-        {/* Item Details */}
-        {itemName && (
-          <div className="p-6 sm:p-7 bg-gradient-to-br from-[#F8F9FB] to-[#F8F9FB]/60 rounded-2xl border border-[#E5E9F0] shadow-sm">
-            <p className="text-sm sm:text-base text-[#64748B] mb-4 font-medium uppercase tracking-wider">
-              You are about to delete:
-            </p>
-            <p className="text-lg sm:text-xl font-semibold text-[#1E1E2E] break-words leading-tight">
-              {itemName}
-            </p>
-          </div>
-        )}
       </div>
     </Modal>
   );

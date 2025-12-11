@@ -81,13 +81,13 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({
       isOpen={isOpen}
       onClose={handleClose}
       title="Invite Team Member"
-      size="lg"
+      size="2xl"
       footer={
-        <div className="flex flex-col sm:flex-row gap-4 w-full">
+        <div className="flex flex-col justify-end sm:flex-row gap-3 sm:gap-4 w-full">
           <Button
             variant="outline"
             onClick={handleClose}
-            className="flex-1 sm:flex-none sm:min-w-[160px] justify-center order-2 sm:order-1 py-3 text-base"
+            className="flex-1 sm:flex-none sm:min-w-[140px] md:min-w-[160px] justify-center order-2 sm:order-1 py-2.5 sm:py-3 text-sm sm:text-base"
           >
             Cancel
           </Button>
@@ -95,42 +95,42 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({
             variant="primary"
             onClick={handleInvite}
             disabled={!email.trim()}
-            icon={<UserPlus size={20} />}
-            className="flex-1 sm:flex-none sm:min-w-[200px] justify-center order-1 sm:order-2 py-3 text-base"
+            icon={<UserPlus size={18} className="sm:w-5 sm:h-5" />}
+            className="flex-1 sm:flex-none sm:min-w-[180px] md:min-w-[200px] justify-center order-1 sm:order-2 py-2.5 sm:py-3 text-sm sm:text-base"
           >
             Send Invitation
           </Button>
         </div>
       }
     >
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
         {/* Info Banner */}
-        <div className="flex items-start gap-5 p-6 sm:p-7 bg-gradient-to-br from-[#DBEAFE] to-[#DBEAFE]/80 rounded-2xl border border-[#1D4ED8]/20 shadow-sm transition-all">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
-            <Info className="w-7 h-7 sm:w-8 sm:h-8 text-[#1D4ED8]" />
+        <div className="flex items-start gap-3 sm:gap-4 md:gap-5 p-4 sm:p-5 md:p-6 lg:p-7 bg-gradient-to-br from-[#DBEAFE] to-[#DBEAFE]/80 rounded-xl sm:rounded-2xl border border-[#1D4ED8]/20 shadow-sm transition-all">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-lg sm:rounded-xl bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+            <Info className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-[#1D4ED8]" />
           </div>
-          <div className="flex-1 min-w-0 pt-1.5">
-            <p className="text-base sm:text-lg text-[#1E1E2E] leading-relaxed font-medium">
+          <div className="flex-1 min-w-0 pt-0.5 sm:pt-1 md:pt-1.5">
+            <p className="text-sm sm:text-base md:text-lg text-[#1E1E2E] leading-relaxed font-medium">
               The invited member will receive an email with instructions to join your team and access reports.
             </p>
           </div>
         </div>
 
         {/* Form Fields */}
-        <div className="space-y-7">
+        <div className="space-y-5 sm:space-y-6 md:space-y-7">
           <Input
             label="Email Address"
             type="email"
             placeholder="colleague@company.com"
             value={email}
             onChange={handleEmailChange}
-            icon={<Mail size={20} />}
+            icon={<Mail size={18} className="sm:w-5 sm:h-5" />}
             error={emailError}
             helperText={!emailError ? "Enter the work email of the team member you want to invite" : undefined}
             autoComplete="email"
           />
 
-          <div className="space-y-5">
+          <div className="space-y-4 sm:space-y-5">
             <Select
               label="Access Level"
               value={role}
@@ -143,9 +143,9 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({
             />
 
             {/* Role Description */}
-            <div className="flex items-start gap-4 p-5 sm:p-6 bg-gradient-to-br from-[#F8F9FB] to-[#F8F9FB]/60 rounded-xl border border-[#E5E9F0] shadow-sm transition-all">
-              <Shield className="w-6 h-6 text-[#64748B] flex-shrink-0 mt-0.5" />
-              <p className="text-base sm:text-lg text-[#64748B] leading-relaxed">
+            <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 bg-gradient-to-br from-[#F8F9FB] to-[#F8F9FB]/60 rounded-lg sm:rounded-xl border border-[#E5E9F0] shadow-sm transition-all">
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-[#64748B] flex-shrink-0 mt-0.5" />
+              <p className="text-sm sm:text-base md:text-lg text-[#64748B] leading-relaxed">
                 {getRoleDescription(role)}
               </p>
             </div>

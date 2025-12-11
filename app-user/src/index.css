@@ -371,6 +371,22 @@
     animation: staggerFadeIn 0.3s ease-out 0.3s both;
   }
 
+  /* Toast Animation */
+  @keyframes slideInFromTop {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-in-from-top {
+    animation: slideInFromTop 0.3s ease-out;
+  }
+
   /* Focus Visible Utility for Accessibility */
   .focus-visible-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2;

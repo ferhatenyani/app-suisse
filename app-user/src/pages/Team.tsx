@@ -9,8 +9,9 @@ import { Select } from '../components/ui/Select';
 import { Badge } from '../components/ui/Badge';
 import { InviteUserModal } from '../components/ui/InviteUserModal';
 import { DeleteConfirmModal } from '../components/ui/DeleteConfirmModal';
+import { Toast } from '../components/ui/Toast';
 import { teamMembers } from '../data/teamMembers';
-import { TeamMember, TeamMemberRole, TeamMemberStatus } from '../types';
+import type { TeamMember, TeamMemberRole, TeamMemberStatus } from '../types';
 import { formatDate, pluralize } from '../utils/formatters';
 
 export const Team: React.FC = () => {
@@ -21,6 +22,8 @@ export const Team: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [members, setMembers] = useState<TeamMember[]>(teamMembers);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const filteredMembers = members.filter((member) => {
     const matchesSearch =
@@ -62,6 +65,11 @@ export const Team: React.FC = () => {
       setMembers(members.filter(member => member.id !== selectedMember.id));
     }
     setSelectedMember(null);
+  };
+
+  const handleInviteUser = (email: string) => {
+    setToastMessage(`Invitation sent successfully to ${email}!`);
+    setShowToast(true);
   };
 
   // Corporate table columns with enhanced styling
@@ -256,6 +264,7 @@ export const Team: React.FC = () => {
       <InviteUserModal
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
+        onInvite={handleInviteUser}
       />
 
       <DeleteConfirmModal
@@ -265,6 +274,13 @@ export const Team: React.FC = () => {
         title="Remove Team Member"
         message="Are you sure you want to remove this team member? They will immediately lose access to all reports and data."
         itemName={selectedMember?.name}
+      />
+
+      <Toast
+        message={toastMessage}
+        type="success"
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
       />
     </div>
   );

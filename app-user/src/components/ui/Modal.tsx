@@ -7,7 +7,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -34,8 +34,9 @@ export const Modal: React.FC<ModalProps> = ({
   const sizes = {
     sm: 'max-w-md',
     md: 'max-w-2xl',
-    lg: 'max-w-3xl',
-    xl: 'max-w-5xl',
+    lg: 'max-w-4xl',
+    xl: 'max-w-6xl',
+    '2xl': 'max-w-7xl',
   };
 
   // Corporate design: enhanced backdrop, better shadows, smooth animations
@@ -49,25 +50,25 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal */}
       <div
-        className={`relative bg-white rounded-2xl shadow-modal w-[calc(100%-2rem)] ${sizes[size]} min-w-[280px] sm:min-w-[400px] max-h-[90vh] overflow-hidden flex flex-col animate-scaleIn`}
+        className={`relative bg-white rounded-xl sm:rounded-2xl shadow-modal w-full ${sizes[size]} min-w-[280px] sm:min-w-[500px] md:min-w-[600px] max-h-[90vh] overflow-hidden flex flex-col animate-scaleIn mx-auto`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-6 border-b border-[#E5E9F0]">
-          <h2 className="text-2xl font-bold text-[#1E1E2E]">{title}</h2>
+        <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 border-b border-[#E5E9F0]">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-[#1E1E2E]">{title}</h2>
           <button
             onClick={onClose}
-            className="text-[#64748B] hover:text-[#1E1E2E] transition-colors p-2 rounded-lg hover:bg-[#F8F9FB]"
+            className="text-[#64748B] hover:text-[#1E1E2E] transition-colors p-1.5 sm:p-2 rounded-lg hover:bg-[#F8F9FB]"
           >
-            <X size={22} />
+            <X size={20} className="sm:w-[22px] sm:h-[22px]" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="px-8 py-8 overflow-y-auto flex-1">{children}</div>
+        <div className="px-4 sm:px-6 md:px-8 py-5 sm:py-6 md:py-8 overflow-y-auto flex-1">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="px-8 py-6 border-t border-[#E5E9F0] bg-[#FAFBFC] flex justify-end gap-3">
+          <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 border-t border-[#E5E9F0] bg-[#FAFBFC] flex justify-end gap-3">
             {footer}
           </div>
         )}

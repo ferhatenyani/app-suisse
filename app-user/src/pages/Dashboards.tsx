@@ -61,16 +61,7 @@ export const Dashboards: React.FC = () => {
               />
             </div>
 
-            {/* Filter Button */}
-            <Button
-              variant="outline"
-              size="lg"
-              icon={<Filter size={18} strokeWidth={2} />}
-              className="md:w-auto"
-              aria-label="Open filters"
-            >
-              Filters
-            </Button>
+           
           </div>
 
           {/* Search Results Count */}

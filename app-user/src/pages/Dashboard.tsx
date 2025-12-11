@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
-import { TrendingUp, TrendingDown, Users, FolderKanban, Activity, Globe, Eye } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, FolderKanban, Activity, Globe, Eye, Trash2 } from 'lucide-react';
 import { currentUser } from '../data/currentUser';
 import { dashboards } from '../data/dashboards';
 import { teamMembers } from '../data/teamMembers';
@@ -69,15 +69,13 @@ interface ActivityItem {
 }
 
 const RecentActivity: React.FC = () => {
-  const navigate = useNavigate();
-
-  const activities: ActivityItem[] = [
+  const [activities, setActivities] = useState<ActivityItem[]>([
     { id: 1, title: 'Q4 Financial Report generated', time: '2 hours ago', user: 'Sarah Chen', type: 'report' },
     { id: 2, title: 'New team member added', time: '5 hours ago', user: 'System', type: 'share' },
     { id: 3, title: 'Sales Dashboard updated', time: '1 day ago', user: 'Michael Torres', type: 'report' },
     { id: 4, title: 'Team permissions modified', time: '2 days ago', user: 'Admin', type: 'update' },
     { id: 5, title: 'Marketing Report exported', time: '3 days ago', user: 'Jessica Liu', type: 'report' },
-  ];
+  ]);
 
   const getTypeBadge = (type: ActivityType) => {
     const badgeConfig: Record<ActivityType, { variant: 'info' | 'success' | 'neutral' | 'warning', icon: React.ReactNode, label: string }> = {
@@ -91,39 +89,67 @@ const RecentActivity: React.FC = () => {
     return <Badge variant={config.variant} size="sm" icon={config.icon}>{config.label}</Badge>;
   };
 
+  const handleDeleteActivity = (id: number) => {
+    setActivities(activities.filter(activity => activity.id !== id));
+  };
+
+  const handleClear = () => {
+    // In a real app, this would clear the activity list
+    setActivities([]);
+  };
+
   return (
-    <Card elevated>
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-sm sm:text-base font-bold text-[var(--color-title)] tracking-tight">Recent Activity</h3>
+    <Card elevated className="h-full">
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <h3 className="text-base sm:text-lg font-bold text-[var(--color-title)] tracking-tight">Recent Activity</h3>
         <button
-          onClick={() => navigate('/app/reports')}
-          className="text-xs sm:text-sm font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1 rounded"
-          aria-label="View all activities"
+          onClick={handleClear}
+          className="px-3 py-2 rounded-lg text-xs font-semibold text-[var(--color-text)] bg-[var(--color-panel)] hover:bg-[var(--color-danger)]/10 hover:text-[var(--color-danger)] border border-[var(--color-border)] hover:border-[var(--color-danger)] transition-all duration-200 flex items-center gap-2 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-danger)] focus-visible:ring-offset-1"
+          aria-label="Clear all activities"
         >
-          View All
+          <Trash2 size={14} strokeWidth={2} className="group-hover:scale-110 transition-transform duration-200" />
+          <span className="hidden sm:inline">Clear All</span>
         </button>
       </div>
-      <div className="space-y-4">
-        {activities.map((activity) => (
-          <div key={activity.id} className="flex items-start gap-3 pb-4 border-b border-[var(--color-border)] last:border-0 last:pb-0">
-            <div className="mt-1 flex-shrink-0">
-              {getTypeBadge(activity.type)}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-[var(--color-text)] font-semibold truncate">{activity.title}</p>
-              <div className="flex items-center flex-wrap gap-2 mt-1">
-                {activity.user && (
-                  <>
-                    <span className="text-xs text-[var(--color-text-muted)] font-medium">{activity.user}</span>
-                    <span className="text-[var(--color-border-strong)]">•</span>
-                  </>
-                )}
-                <span className="text-xs text-[var(--color-text-muted)] font-medium">{activity.time}</span>
+      {activities.length === 0 ? (
+        <div className="text-center py-12">
+          <Activity size={48} className="mx-auto text-[var(--color-text-muted)] opacity-50 mb-3" />
+          <p className="text-sm text-[var(--color-text-muted)] font-medium">No recent activities</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {activities.map((activity, index) => (
+            <div
+              key={activity.id}
+              className="flex items-start gap-3 pb-4 border-b border-[var(--color-border)] last:border-0 last:pb-0 animate-fadeIn group"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <div className="mt-1 flex-shrink-0">
+                {getTypeBadge(activity.type)}
               </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-base text-[var(--color-text)] font-semibold truncate group-hover:text-[var(--color-primary)] transition-colors duration-200">{activity.title}</p>
+                <div className="flex items-center flex-wrap gap-2 mt-1.5">
+                  {activity.user && (
+                    <>
+                      <span className="text-sm text-[var(--color-text-muted)] font-medium">{activity.user}</span>
+                      <span className="text-[var(--color-border-strong)]">•</span>
+                    </>
+                  )}
+                  <span className="text-sm text-[var(--color-text-muted)] font-medium">{activity.time}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => handleDeleteActivity(activity.id)}
+                className="mt-1 p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10 active:bg-[var(--color-danger)]/20 active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-danger)] focus-visible:ring-offset-1 flex-shrink-0"
+                aria-label={`Delete ${activity.title}`}
+              >
+                <Trash2 size={16} strokeWidth={2} />
+              </button>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 };
@@ -251,89 +277,112 @@ export const Dashboard: React.FC = () => {
         </div>
       </section>
 
-      {/* Content Grid - Two column layout for Recent Activity and Quick Actions */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" aria-label="Activity and actions">
-        {/* Recent Activity - Takes 2 columns */}
-        <div className="lg:col-span-2">
-          <RecentActivity />
-        </div>
-
-        {/* Quick Actions & Team Overview */}
-        <div className="space-y-6">
-          {/* Quick Actions */}
-          <Card elevated>
-            <h3 className="text-sm sm:text-base font-bold text-[var(--color-title)] tracking-tight mb-5">
+      {/* Quick Actions & Team Overview - Side by side layout */}
+      <section className={`grid grid-cols-1 ${isOrganization ? 'lg:grid-cols-2' : ''} gap-6 mb-8`} aria-label="Quick actions and team overview">
+        {/* Quick Actions */}
+        <Card elevated className="h-full flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-base sm:text-lg font-bold text-[var(--color-title)] tracking-tight">
               Quick Actions
             </h3>
-            <div className="space-y-2.5">
+          </div>
+          <div className={`flex-1 ${isOrganization ? 'space-y-3' : 'grid grid-cols-1 sm:grid-cols-3 gap-3'}`}>
+            <button
+              onClick={() => navigate('/app/reports')}
+              className="w-full text-left p-4 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-primary)]/10 border-2 border-[var(--color-border)] hover:border-[var(--color-primary)] transition-all duration-300 text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center justify-between group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 hover:shadow-lg hover:shadow-[var(--color-primary)]/10 hover:-translate-y-0.5"
+              aria-label="Create new report"
+            >
+              <div>
+                <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Create New</span>
+                <span className="block">Report</span>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center transition-all duration-300 flex-shrink-0 group-hover:scale-110 group-hover:rotate-3" aria-hidden="true">
+                <FolderKanban size={20} strokeWidth={2} className="text-[var(--color-primary)]" />
+              </div>
+            </button>
+            {isOrganization && (
               <button
-                onClick={() => navigate('/app/reports')}
-                className="w-full text-left px-4 py-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
-                aria-label="Create new report"
+                onClick={() => navigate('/app/team')}
+                className="w-full text-left p-4 rounded-xl bg-gradient-to-br from-[var(--color-accent)]/5 to-[var(--color-accent)]/10 border-2 border-[var(--color-border)] hover:border-[var(--color-primary)] transition-all duration-300 text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center justify-between group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 hover:shadow-lg hover:shadow-[var(--color-primary)]/10 hover:-translate-y-0.5"
+                aria-label="Manage team"
               >
-                <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors flex-shrink-0" aria-hidden="true">
-                  <FolderKanban size={16} strokeWidth={2} className="text-[var(--color-primary)]" />
+                <div>
+                  <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Manage</span>
+                  <span className="block">Team</span>
                 </div>
-                Create New Report
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center transition-all duration-300 flex-shrink-0 group-hover:scale-110 group-hover:rotate-3" aria-hidden="true">
+                  <Users size={20} strokeWidth={2} className="text-[var(--color-primary)]" />
+                </div>
               </button>
-              {isOrganization && (
-                <button
-                  onClick={() => navigate('/app/team')}
-                  className="w-full text-left px-4 py-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
-                  aria-label="Manage team"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors flex-shrink-0" aria-hidden="true">
-                    <Users size={16} strokeWidth={2} className="text-[var(--color-primary)]" />
-                  </div>
-                  Manage Team
-                </button>
-              )}
+            )}
+            <button
+              onClick={() => navigate('/app/reports')}
+              className="w-full text-left p-4 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-accent)]/10 border-2 border-[var(--color-border)] hover:border-[var(--color-primary)] transition-all duration-300 text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center justify-between group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 hover:shadow-lg hover:shadow-[var(--color-primary)]/10 hover:-translate-y-0.5"
+              aria-label="View all reports"
+            >
+              <div>
+                <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">View All</span>
+                <span className="block">Reports</span>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center transition-all duration-300 flex-shrink-0 group-hover:scale-110 group-hover:rotate-3" aria-hidden="true">
+                <Eye size={20} strokeWidth={2} className="text-[var(--color-primary)]" />
+              </div>
+            </button>
+          </div>
+        </Card>
+
+        {/* Team Overview - Only for organizations */}
+        {isOrganization && (
+          <Card elevated className="h-full flex flex-col">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-base sm:text-lg font-bold text-[var(--color-title)] tracking-tight">
+                Team Overview
+              </h3>
               <button
-                onClick={() => navigate('/app/reports')}
-                className="w-full text-left px-4 py-3 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-1"
-                aria-label="View all reports"
+                onClick={() => navigate('/app/team')}
+                className="text-xs font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors px-2 py-1 rounded hover:bg-[var(--color-primary)]/5"
               >
-                <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)]/10 group-hover:bg-[var(--color-primary)]/20 flex items-center justify-center transition-colors flex-shrink-0" aria-hidden="true">
-                  <Eye size={16} strokeWidth={2} className="text-[var(--color-primary)]" />
-                </div>
-                View All Reports
+                View All →
               </button>
             </div>
-          </Card>
-
-          {/* Team Overview - Only for organizations */}
-          {isOrganization && (
-            <Card elevated>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm sm:text-base font-bold text-[var(--color-title)] tracking-tight">
-                  Team Overview
-                </h3>
-                <button
-                  onClick={() => navigate('/app/team')}
-                  className="text-xs font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors"
-                >
-                  View All
-                </button>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-success)]/5 border border-[var(--color-success)]/20">
-                  <span className="text-sm font-semibold text-[var(--color-text)]">Active</span>
-                  <span className="text-lg font-bold text-[var(--color-success)]">{activeMembers}</span>
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-success)]/5 to-[var(--color-success)]/10 border-2 border-[var(--color-success)]/20 hover:border-[var(--color-success)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-success)]/10 group cursor-pointer hover:-translate-y-0.5">
+                <div>
+                  <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Active Members</span>
+                  <span className="text-sm font-semibold text-[var(--color-success)] block">{activeMembers}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-warning)]/5 border border-[var(--color-warning)]/20">
-                  <span className="text-sm font-semibold text-[var(--color-text)]">Pending</span>
-                  <span className="text-lg font-bold text-[var(--color-warning)]">
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-success)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
+                  <Users size={20} className="text-[var(--color-success)]" strokeWidth={2} />
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-warning)]/5 to-[var(--color-warning)]/10 border-2 border-[var(--color-warning)]/20 hover:border-[var(--color-warning)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-warning)]/10 group cursor-pointer hover:-translate-y-0.5">
+                <div>
+                  <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Pending Invites</span>
+                  <span className="text-sm font-semibold text-[var(--color-warning)] block">
                     {teamMembers.filter(m => m.status === 'pending').length}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-panel)]">
-                  <span className="text-sm font-semibold text-[var(--color-text)]">Total Members</span>
-                  <span className="text-lg font-bold text-[var(--color-title)]">{totalMembers}</span>
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-warning)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
+                  <Activity size={20} className="text-[var(--color-warning)]" strokeWidth={2} />
                 </div>
               </div>
-            </Card>
-          )}
-        </div>
+              <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-accent)]/10 border-2 border-[var(--color-border)] hover:border-[var(--color-primary)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-primary)]/10 group cursor-pointer hover:-translate-y-0.5">
+                <div>
+                  <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Total Members</span>
+                  <span className="text-sm font-semibold text-[var(--color-title)] block">{totalMembers}</span>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
+                  <Users size={20} className="text-[var(--color-primary)]" strokeWidth={2} />
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+      </section>
+
+      {/* Recent Activity - Full width at bottom */}
+      <section className="mb-8" aria-label="Recent activity">
+        <RecentActivity />
       </section>
     </div>
   );

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Bell, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Bell, User, Languages } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const routeTitles: Record<string, string> = {
@@ -13,7 +13,12 @@ const routeTitles: Record<string, string> = {
 export const TopNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [language, setLanguage] = useState<'en' | 'fr'>('en');
   const pageTitle = routeTitles[location.pathname] || 'Dashboard';
+
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === 'en' ? 'fr' : 'en');
+  };
 
   return (
     <header className="sticky top-0 z-30 bg-white shadow-sm">
@@ -25,8 +30,25 @@ export const TopNav: React.FC = () => {
           </h2>
         </div>
 
-        {/* Right - Notifications, Settings */}
-        <div className="flex items-center gap-3">
+        {/* Right - Language, Notifications, Profile */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Language Toggle */}
+          <button
+            onClick={toggleLanguage}
+            className="group relative flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-[var(--color-text-secondary)] hover:text-[var(--color-title)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] border border-[var(--color-border)] hover:border-blue-400 rounded-lg shadow-sm hover:shadow transition-all duration-200 ease-in-out active:scale-95 overflow-hidden"
+            aria-label={`Switch to ${language === 'en' ? 'French' : 'English'}`}
+          >
+            <Languages
+              size={18}
+              strokeWidth={1.5}
+              className="transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12"
+            />
+            <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide transition-all duration-200 ease-in-out group-hover:tracking-wider">
+              {language}
+            </span>
+            {/* Animated accent line */}
+          </button>
+
           {/* Notifications */}
           <button
             onClick={() => navigate('/app/notifications')}

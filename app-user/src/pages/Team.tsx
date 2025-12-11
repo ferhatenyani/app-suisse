@@ -93,17 +93,16 @@ export const Team: React.FC = () => {
       header: 'Actions',
       accessor: (row: TeamMember) => (
         <div className="flex items-center gap-2">
-          {row.status === 'pending' && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="!p-2 hover:bg-[var(--color-info-light)] hover:text-[var(--color-info)]"
-              aria-label="Resend invitation"
-              title="Resend invitation"
-            >
-              <Mail size={16} />
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="!p-2 hover:bg-[var(--color-info-light)] hover:text-[var(--color-info)]"
+            onClick={() => window.location.href = `mailto:${row.email}`}
+            aria-label="Send email"
+            title="Send email"
+          >
+            <Mail size={16} />
+          </Button>
           <Button
             variant="ghost"
             size="sm"

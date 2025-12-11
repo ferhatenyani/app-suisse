@@ -45,6 +45,20 @@ export const Team: React.FC = () => {
     return <Badge variant={config.variant} size="sm" icon={config.icon}>{config.label}</Badge>;
   };
 
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  const handleEmailShare = (email: string) => {
+      
+    if (isMobile) {
+      // On mobile devices, use mailto link
+      window.location.href = `mailto:${email}`;
+    } else {
+      // On desktop: open Gmail web compose in a new tab
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}`;
+      window.open(gmailUrl, '_blank');
+    }
+  };
+
   const getStatusBadge = (status: TeamMemberStatus) => {
     const configs: Record<TeamMemberStatus, { variant: 'success' | 'warning' | 'danger'; label: string }> = {
       active: { variant: 'success', label: 'Active' },
@@ -108,7 +122,7 @@ export const Team: React.FC = () => {
             variant="ghost"
             size="sm"
             className="!p-2 hover:bg-[var(--color-info-light)] hover:text-[var(--color-info)]"
-            onClick={() => window.location.href = `mailto:${row.email}`}
+            onClick={() => handleEmailShare(row.email)}
             aria-label="Send email"
             title="Send email"
           >

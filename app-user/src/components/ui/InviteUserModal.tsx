@@ -44,6 +44,33 @@ export const InviteUserModal: React.FC<InviteUserModalProps> = ({
       return;
     }
 
+    // Create email invitation
+    const subject = 'You\'re invited to join our team!';
+    const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
+    const body =
+      `Hi,\n\n` +
+      `You've been invited to join our team as a ${roleLabel}.\n\n` +
+      `Role permissions:\n` +
+      `${getRoleDescription(role)}\n\n` +
+      `Click the link below to accept the invitation and get started:\n` +
+      `[Your invitation link will be here]\n\n` +
+      `If you have any questions, feel free to reach out!\n\n` +
+      `Best regards,\n` +
+      `The Team`;
+
+    // Detect if mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // On mobile: use mailto to open Gmail app or default mail app
+      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
+    } else {
+      // On desktop: open Gmail web compose in a new tab
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(gmailUrl, '_blank');
+    }
+
     // Call the onInvite callback if provided
     if (onInvite) {
       onInvite(email, role);

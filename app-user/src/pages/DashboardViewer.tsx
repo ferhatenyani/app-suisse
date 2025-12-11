@@ -14,7 +14,8 @@ export const DashboardViewer: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const iframeContainerRef = useRef<HTMLDivElement>(null);
 
   const dashboard = dashboards.find((d) => d.id === id);
@@ -59,9 +60,15 @@ export const DashboardViewer: React.FC = () => {
 
  
 
-  // Handle refresh button
+  // Handle refresh button - simulates iframe reload
   const handleRefresh = () => {
+    setIsRefreshing(true);
+    // Increment the key to force a complete re-render of PowerBiPlaceholder
     setRefreshKey((prev) => prev + 1);
+    // Simulate a brief loading period to mimic iframe reload
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 300);
   };
 
   // Handle export button
@@ -147,12 +154,13 @@ export const DashboardViewer: React.FC = () => {
                 <Button
                   variant="outline"
                   size="md"
-                  icon={<RefreshCw size={16} strokeWidth={2} />}
+                  icon={<RefreshCw size={16} strokeWidth={2} className={isRefreshing ? 'animate-spin' : ''} />}
                   onClick={handleRefresh}
+                  disabled={isRefreshing}
                   aria-label="Refresh report"
                   className="flex-shrink-0"
                 >
-                  <span className="hidden sm:inline">Refresh</span>
+                  <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -221,14 +229,27 @@ export const DashboardViewer: React.FC = () => {
             noPadding
             elevated
           >
-            <PowerBiPlaceholder
-              key={refreshKey}
-              title={dashboard.title}
-              description={dashboard.description}
-              mockMetrics={getMockDataForDashboard(dashboard.id).metrics}
-              variant="hybrid"
-              fullHeight
-            />
+            <div className="relative flex-1 flex flex-col min-h-0">
+              {/* Always render PowerBiPlaceholder to maintain container dimensions */}
+              <PowerBiPlaceholder
+                key={refreshKey}
+                title={dashboard.title}
+                description={dashboard.description}
+                mockMetrics={getMockDataForDashboard(dashboard.id).metrics}
+                variant="hybrid"
+                fullHeight
+              />
+
+              {/* Loading overlay during refresh */}
+              {isRefreshing && (
+                <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-10">
+                  <div className="text-center">
+                    <RefreshCw className="w-12 h-12 text-[var(--color-primary)] animate-spin mx-auto mb-3" strokeWidth={2} />
+                    <p className="text-sm text-[var(--color-text-secondary)] font-medium">Refreshing report...</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </Card>
         </div>
       </div>

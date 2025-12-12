@@ -38,11 +38,7 @@ export const PowerBiPlaceholder: React.FC<PowerBiPlaceholderProps> = React.memo(
       className
     )}>
       <div className="w-full max-w-6xl">
-        {/* Header */}
         
-
-        
-
         {/* Mock Screenshot */}
         {showScreenshot && (
           <div className="rounded-xl overflow-hidden border-2 border-[var(--color-border)] shadow-lg bg-white">

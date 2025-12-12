@@ -3,11 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Share2, Download, Maximize2, X, RefreshCw, BarChart3 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
-import { PowerBiPlaceholder } from '../components/ui/PowerBiPlaceholder';
 import { ShareModal } from '../components/modals/ShareModal';
 import { ExportModal } from '../components/modals/ExportModal';
 import { dashboards } from '../data/dashboards';
-import { getMockDataForDashboard } from '../data/dashboardMocks';
 
 export const DashboardViewer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -68,12 +66,12 @@ export const DashboardViewer: React.FC = () => {
 
  
 
-  // Handle refresh button - simulates iframe reload
+  // Handle refresh button - simulates image reload
   const handleRefresh = () => {
     setIsRefreshing(true);
-    // Increment the key to force a complete re-render of PowerBiPlaceholder
+    // Increment the key to force a complete re-render of the dashboard image
     setRefreshKey((prev) => prev + 1);
-    // Simulate a brief loading period to mimic iframe reload
+    // Simulate a brief loading period to mimic reload
     setTimeout(() => {
       setIsRefreshing(false);
     }, 300);
@@ -232,7 +230,7 @@ export const DashboardViewer: React.FC = () => {
           </div>
         </Card>
 
-        {/* Power BI Embed Container */}
+        {/* Dashboard Image Container */}
         <div
           ref={iframeContainerRef}
           className={`flex-1 flex flex-col min-h-0 relative ${
@@ -250,7 +248,7 @@ export const DashboardViewer: React.FC = () => {
                 aria-label="Exit fullscreen mode"
                 className="shadow-2xl"
               >
-                 
+
               </Button>
             </div>
           )}
@@ -263,16 +261,17 @@ export const DashboardViewer: React.FC = () => {
             noPadding
             elevated
           >
-            <div className="relative flex-1 flex flex-col min-h-0">
-              {/* Always render PowerBiPlaceholder to maintain container dimensions */}
-              <PowerBiPlaceholder
-                key={refreshKey}
-                title={dashboard.title}
-                description={dashboard.description}
-                mockMetrics={getMockDataForDashboard(dashboard.id).metrics}
-                variant="hybrid"
-                fullHeight
-              />
+            <div className="relative flex-1 flex flex-col min-h-0 bg-[var(--color-panel)]">
+              {/* Dashboard Image Display */}
+              <div className="w-full h-full overflow-auto p-4 xs:p-6 md:p-8">
+                <img
+                  key={refreshKey}
+                  src={dashboard.thumbnailUrl}
+                  alt={dashboard.title}
+                  className="w-full h-auto object-contain rounded-lg shadow-sm"
+                  style={{ minHeight: '100%', objectFit: 'contain' }}
+                />
+              </div>
 
               {/* Loading overlay during refresh */}
               {isRefreshing && (

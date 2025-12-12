@@ -29,7 +29,6 @@ export const TopNav: React.FC = () => {
       <div className="flex items-center justify-between h-16 pl-16 pr-4 sm:pl-4 lg:px-8 border-b border-[var(--color-border)]">
         {/* Left - Page Title & Navigation Controls */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <NavigationControls className="hidden sm:flex" />
           <h2 className="text-lg font-bold text-[var(--color-title)] tracking-tight truncate">
             {pageTitle}
           </h2>

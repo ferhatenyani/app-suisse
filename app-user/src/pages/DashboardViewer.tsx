@@ -166,7 +166,7 @@ export const DashboardViewer: React.FC = () => {
               {/* Left: Title and Back */}
               <div className="flex-1 min-w-0">
                 <button
-                  onClick={() => navigate('/app/dashboards')}
+                  onClick={() => navigate('/app/reports')}
                   aria-label="Go back to reports list"
                   className="flex items-center gap-2 text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors mb-1.5 xs:mb-2 md:mb-4 group"
                 >

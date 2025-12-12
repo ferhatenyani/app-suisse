@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Save, X, User as UserIcon, Mail, Building2, Lock, Calendar, Shield } from 'lucide-react';
+import { Camera, Save, X, User as UserIcon, Mail, Building2, Lock, Calendar, Shield, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
@@ -8,6 +9,7 @@ import { currentUser } from '../data/currentUser';
 import { formatDate } from '../utils/formatters';
 
 export const Profile: React.FC = () => {
+  const navigate = useNavigate();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isEditingMainContent, setIsEditingMainContent] = useState(false);
   const [formData, setFormData] = useState({
@@ -74,6 +76,11 @@ export const Profile: React.FC = () => {
       avatar: currentUser.avatar || '',
     });
     setIsEditingMainContent(false);
+  };
+
+  const handleLogout = () => {
+    // Clear any user session data here if needed
+    navigate('/login');
   };
 
   return (
@@ -329,6 +336,29 @@ export const Profile: React.FC = () => {
               )}
             </div>
           </Card>
+      </div>
+
+      {/* Logout Button - Bottom of page */}
+      <div className="w-full mt-8">
+        <Card className="bg-red-50 border-red-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-bold text-red-900 mb-1">Log Out</h3>
+              <p className="text-sm text-red-700 font-medium">Sign out of your account</p>
+            </div>
+            <Button
+              variant="secondary"
+              onClick={handleLogout}
+              size="md"
+              icon={<LogOut size={18} strokeWidth={1.5} />}
+              iconPosition="right"
+              aria-label="Log out of your account"
+              className="text-base py-2.5 px-6 !bg-red-700 text-white !border-red-700 hover:!bg-red-800 hover:!border-red-800 transition-all duration-200 hover:shadow-lg hover:scale-105"
+            >
+              Log Out
+            </Button>
+          </div>
+        </Card>
       </div>
     </div>
   );

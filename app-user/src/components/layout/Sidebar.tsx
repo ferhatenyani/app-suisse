@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Users, User, LifeBuoy, Menu, X, Bell } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, FolderKanban, Users, User, LifeBuoy, Menu, X, Bell, LogOut } from 'lucide-react';
 import { currentUser } from '../../data/currentUser';
 
 interface NavItem {
@@ -12,6 +12,7 @@ interface NavItem {
 
 export const Sidebar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanding, setIsExpanding] = useState(false);
@@ -57,6 +58,11 @@ export const Sidebar: React.FC = () => {
 
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  const handleLogout = () => {
+    // Clear any user session data here if needed
+    navigate('/login');
   };
 
   // Handle indicator fade animation during expand/collapse
@@ -173,33 +179,29 @@ export const Sidebar: React.FC = () => {
 
       {/* User Info at Bottom */}
       <div className="border-t border-[var(--color-border)] p-3">
-        <Link
-          to="/app/profile"
-          onClick={() => setIsMobileMenuOpen(false)}
-          className="relative flex items-center h-11 rounded-lg bg-[var(--color-panel)] hover:bg-[var(--color-surface-hover)] transition-colors duration-300 overflow-hidden"
-          title={isCollapsed ? 'Profile Settings' : undefined}
-        >
-          {/* Fixed position avatar */}
-          <div className="absolute left-1 w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center text-white text-[13px] font-bold shadow-sm ring-2 ring-white/5">
-            {currentUser.name.charAt(0)}
-          </div>
-
-          {/* Text content with clip reveal */}
-          <div
-            className="absolute left-12 transition-all duration-500 ease-in-out overflow-hidden"
-            style={{
-              maxWidth: isCollapsed ? '0px' : '180px',
-              opacity: isCollapsed ? 0 : 1,
-            }}
+        <div className="relative flex items-center h-11 rounded-lg bg-[var(--color-panel)] overflow-hidden">
+          {/* Fixed position avatar - clickable link to profile */}
+          <Link
+            to="/app/profile"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="absolute left-1 w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center text-white text-[13px] font-bold shadow-sm ring-2 ring-white/5 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
+            title="Profile Settings"
           >
-            <p className="text-[13px] font-semibold text-[var(--color-title)] whitespace-nowrap leading-tight">
-              {currentUser.name}
-            </p>
-            <p className="text-[11px] text-[var(--color-text-muted)] whitespace-nowrap font-medium mt-0.5 leading-tight">
-              {currentUser.email}
-            </p>
-          </div>
-        </Link>
+            {currentUser.name.charAt(0)}
+          </Link>
+
+          {/* Logout button - only visible when expanded */}
+          <button
+            onClick={handleLogout}
+            className={`absolute right-1 p-2 text-red-500 hover:text-white hover:!bg-red-600 rounded-lg transition-all duration-300 ${
+              isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+            }`}
+            title="Log out"
+            aria-label="Log out"
+          >
+            <LogOut size={18} strokeWidth={1.5} />
+          </button>
+        </div>
       </div>
     </>
   );

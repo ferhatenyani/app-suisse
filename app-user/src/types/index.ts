@@ -76,6 +76,8 @@ export type TicketType = 'incident' | 'request';
 
 export type TicketStatus = 'new' | 'open' | 'in_progress' | 'resolved' | 'closed';
 
+export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
+
 export interface TicketMessage {
   id: string;
   sender: 'user' | 'admin';

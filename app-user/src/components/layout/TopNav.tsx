@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, User, Languages } from 'lucide-react';
+import { Bell, Languages } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNotifications } from '../../contexts/NotificationContext';
 

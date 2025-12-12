@@ -243,14 +243,6 @@ export const ContactSupport: React.FC = () => {
     setSelectedType(null);
   };
 
-  const clearStatusFilter = () => {
-    setSelectedStatuses([]);
-  };
-
-  const clearTypeFilter = () => {
-    setSelectedType(null);
-  };
-
   const hasActiveFilters = selectedStatuses.length > 0 || selectedType !== null;
 
   return (

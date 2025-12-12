@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, Mail, Trash2, Users as UsersIcon, Shield, Eye, Edit3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { UserPlus, Search, Mail, Trash2, Users as UsersIcon, Shield, Eye, Edit3, Crown } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
@@ -10,11 +11,15 @@ import { Badge } from '../components/ui/Badge';
 import { InviteUserModal } from '../components/ui/InviteUserModal';
 import { DeleteConfirmModal } from '../components/ui/DeleteConfirmModal';
 import { Toast } from '../components/ui/Toast';
+import { UpgradeModal } from '../components/ui/UpgradeModal';
+import { useAuth } from '../contexts/AuthContext';
 import { teamMembers } from '../data/teamMembers';
 import type { TeamMember, TeamMemberRole, TeamMemberStatus } from '../types';
 import { formatDate, pluralize } from '../utils/formatters';
 
 export const Team: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -24,12 +29,18 @@ export const Team: React.FC = () => {
   const [members, setMembers] = useState<TeamMember[]>(teamMembers);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     const mainElement = document.querySelector('main');
     if (mainElement) mainElement.scrollTo(0, 0);
-  }, []);
+
+    // Redirect individual users
+    if (user?.role === 'individual') {
+      setShowUpgradeModal(true);
+    }
+  }, [user]);
 
   const filteredMembers = members.filter((member) => {
     const matchesSearch =
@@ -148,6 +159,45 @@ export const Team: React.FC = () => {
       ),
     },
   ];
+
+  // If individual user, show restricted access screen
+  if (user?.role === 'individual') {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center">
+        <Card className="max-w-md text-center p-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] text-white mb-6">
+            <Crown size={40} strokeWidth={2} />
+          </div>
+          <h2 className="text-2xl font-bold text-[var(--color-title)] mb-3">Team Features Locked</h2>
+          <p className="text-[var(--color-text-secondary)] mb-6">
+            Team management and collaboration features are available exclusively for Pro/Organization accounts.
+          </p>
+          <div className="space-y-3">
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full"
+              icon={<Crown size={18} />}
+              onClick={() => setShowUpgradeModal(true)}
+            >
+              Upgrade to Pro
+            </Button>
+            <Button
+              variant="ghost"
+              size="md"
+              className="w-full"
+              onClick={() => navigate('/app/dashboard')}
+            >
+              Back to Dashboard
+            </Button>
+          </div>
+        </Card>
+
+        {/* Upgrade Modal */}
+        <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+      </div>
+    );
+  }
 
   return (
     <div>

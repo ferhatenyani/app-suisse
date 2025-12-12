@@ -1,25 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LayoutGrid, Mail, Lock, ArrowRight } from 'lucide-react';
+import { LayoutGrid, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { useAuth } from '../contexts/AuthContext';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+      navigate('/app/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - redirect to dashboard
-    console.log('Logging in:', { email, password, rememberMe });
-    navigate('/app/dashboard');
+    setError('');
+
+    const success = login(email, password);
+
+    if (success) {
+      navigate('/app/dashboard');
+    } else {
+      setError('Invalid email or password. Please try again.');
+    }
   };
 
   // Corporate login: centered card with logo, minimal form, professional background
@@ -38,6 +51,16 @@ export const Login: React.FC = () => {
         {/* Login Card */}
         <Card className="shadow-elevated p-5 xs:p-6 md:p-8">
           <form onSubmit={handleLogin} className="space-y-5 xs:space-y-6" aria-label="Login form">
+            {error && (
+              <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-red-900 mb-1">Login Failed</p>
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            )}
+
             <Input
               label="Email Address"
               type="email"

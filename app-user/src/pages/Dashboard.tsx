@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { TrendingUp, TrendingDown, Users, FolderKanban, Activity, Globe, Eye, Trash2 } from 'lucide-react';
-import { currentUser } from '../data/currentUser';
+import { useAuth } from '../contexts/AuthContext';
+import { UpgradeModal } from '../components/ui/UpgradeModal';
 import { dashboards } from '../data/dashboards';
 import { teamMembers } from '../data/teamMembers';
 import { formatDate } from '../utils/formatters';
@@ -156,7 +157,9 @@ const RecentActivity: React.FC = () => {
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const isOrganization = currentUser.role === 'organization';
+  const { user } = useAuth();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const isOrganization = user?.role === 'organization';
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -188,7 +191,7 @@ export const Dashboard: React.FC = () => {
             Dashboard
           </h1>
           <p className="text-sm sm:text-base text-[var(--color-text-secondary)] mt-2 font-medium">
-            {isOrganization ? `${currentUser.companyName} Overview` : 'Your workspace overview'}
+            {isOrganization && user?.companyName ? `${user.companyName} Overview` : 'Your workspace overview'}
           </p>
         </div>
         <div className="text-xs sm:text-sm text-[var(--color-text-muted)] font-medium whitespace-nowrap">
@@ -337,52 +340,78 @@ export const Dashboard: React.FC = () => {
           </div>
         </Card>
 
-        {/* Team Overview - Only for organizations */}
-        {isOrganization && (
-          <Card elevated className="h-full flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-base sm:text-lg font-bold text-[var(--color-title)] tracking-tight">
-                Team Overview
-              </h3>
+        {/* Team Overview - Shown for both, but blurred for individuals */}
+        {(isOrganization || user?.role === 'individual') && (
+          <div className="relative">
+            <Card elevated className={`h-full flex flex-col ${user?.role === 'individual' ? 'overflow-hidden' : ''}`}>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className={`text-base sm:text-lg font-bold text-[var(--color-title)] tracking-tight ${user?.role === 'individual' ? 'blur-sm' : ''}`}>
+                  Team Overview
+                </h3>
+                <button
+                  onClick={() => user?.role === 'individual' ? setShowUpgradeModal(true) : navigate('/app/team')}
+                  className={`text-xs font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors px-2 py-1 rounded hover:bg-[var(--color-primary)]/5 ${user?.role === 'individual' ? 'blur-sm' : ''}`}
+                >
+                  View All →
+                </button>
+              </div>
+              <div className={`flex-1 space-y-3 ${user?.role === 'individual' ? 'blur-sm' : ''}`}>
+                <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-success)]/5 to-[var(--color-success)]/10 border-2 border-[var(--color-success)]/20 hover:border-[var(--color-success)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-success)]/10 group cursor-pointer hover:-translate-y-0.5">
+                  <div>
+                    <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Active Members</span>
+                    <span className="text-sm font-semibold text-[var(--color-success)] block">{activeMembers}</span>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-[var(--color-success)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
+                    <Users size={20} className="text-[var(--color-success)]" strokeWidth={2} />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-warning)]/5 to-[var(--color-warning)]/10 border-2 border-[var(--color-warning)]/20 hover:border-[var(--color-warning)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-warning)]/10 group cursor-pointer hover:-translate-y-0.5">
+                  <div>
+                    <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Pending Invites</span>
+                    <span className="text-sm font-semibold text-[var(--color-warning)] block">
+                      {teamMembers.filter(m => m.status === 'pending').length}
+                    </span>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-[var(--color-warning)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
+                    <Activity size={20} className="text-[var(--color-warning)]" strokeWidth={2} />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-accent)]/10 border-2 border-[var(--color-border)] hover:border-[var(--color-primary)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-primary)]/10 group cursor-pointer hover:-translate-y-0.5">
+                  <div>
+                    <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Total Members</span>
+                    <span className="text-sm font-semibold text-[var(--color-title)] block">{totalMembers}</span>
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
+                    <Users size={20} className="text-[var(--color-primary)]" strokeWidth={2} />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Upgrade overlay for individual users */}
+            {user?.role === 'individual' && (
               <button
-                onClick={() => navigate('/app/team')}
-                className="text-xs font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors px-2 py-1 rounded hover:bg-[var(--color-primary)]/5"
+                onClick={() => setShowUpgradeModal(true)}
+                className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[2px] hover:bg-white/70 transition-all duration-300 cursor-pointer group rounded-xl"
               >
-                View All →
+                <div className="bg-white rounded-xl shadow-xl p-6 border-2 border-[var(--color-primary)]/20 group-hover:border-[var(--color-primary)]/40 transition-all duration-300 group-hover:scale-105">
+                  <div className="text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] text-white mb-3">
+                      <Users size={24} strokeWidth={2} />
+                    </div>
+                    <h4 className="text-lg font-bold text-[var(--color-title)] mb-1">Team Features</h4>
+                    <p className="text-sm text-[var(--color-text-secondary)] mb-3">Upgrade to Pro to unlock team collaboration</p>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] text-white text-sm font-semibold rounded-lg group-hover:shadow-lg transition-all duration-300">
+                      <span>Upgrade Now</span>
+                      <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </button>
-            </div>
-            <div className="flex-1 space-y-3">
-              <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-success)]/5 to-[var(--color-success)]/10 border-2 border-[var(--color-success)]/20 hover:border-[var(--color-success)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-success)]/10 group cursor-pointer hover:-translate-y-0.5">
-                <div>
-                  <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Active Members</span>
-                  <span className="text-sm font-semibold text-[var(--color-success)] block">{activeMembers}</span>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-[var(--color-success)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
-                  <Users size={20} className="text-[var(--color-success)]" strokeWidth={2} />
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-warning)]/5 to-[var(--color-warning)]/10 border-2 border-[var(--color-warning)]/20 hover:border-[var(--color-warning)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-warning)]/10 group cursor-pointer hover:-translate-y-0.5">
-                <div>
-                  <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Pending Invites</span>
-                  <span className="text-sm font-semibold text-[var(--color-warning)] block">
-                    {teamMembers.filter(m => m.status === 'pending').length}
-                  </span>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-[var(--color-warning)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
-                  <Activity size={20} className="text-[var(--color-warning)]" strokeWidth={2} />
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-accent)]/10 border-2 border-[var(--color-border)] hover:border-[var(--color-primary)]/40 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--color-primary)]/10 group cursor-pointer hover:-translate-y-0.5">
-                <div>
-                  <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wider block mb-1">Total Members</span>
-                  <span className="text-sm font-semibold text-[var(--color-title)] block">{totalMembers}</span>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0">
-                  <Users size={20} className="text-[var(--color-primary)]" strokeWidth={2} />
-                </div>
-              </div>
-            </div>
-          </Card>
+            )}
+          </div>
         )}
       </section>
 
@@ -390,6 +419,9 @@ export const Dashboard: React.FC = () => {
       <section className="mb-8" aria-label="Recent activity">
         <RecentActivity />
       </section>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
     </div>
   );
 };

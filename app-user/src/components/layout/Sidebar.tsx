@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, FolderKanban, Users, User, LifeBuoy, Menu, X, Bell, LogOut } from 'lucide-react';
-import { currentUser } from '../../data/currentUser';
+import { useAuth } from '../../contexts/AuthContext';
+import { UpgradeModal } from '../ui/UpgradeModal';
 
 interface NavItem {
   path: string;
@@ -13,10 +14,12 @@ interface NavItem {
 export const Sidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanding, setIsExpanding] = useState(false);
   const [isFullyExpanded, setIsFullyExpanded] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // Minimalist corporate navigation
   const navItems: NavItem[] = [
@@ -53,16 +56,12 @@ export const Sidebar: React.FC = () => {
     },
   ];
 
-  const filteredNavItems = navItems.filter(
-    (item) => !item.roles || item.roles.includes(currentUser.role)
-  );
-
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   const handleLogout = () => {
-    // Clear any user session data here if needed
+    logout();
     navigate('/login');
   };
 
@@ -114,9 +113,9 @@ export const Sidebar: React.FC = () => {
           <h1 className="text-[15px] font-bold text-[var(--color-title)] tracking-[-0.01em] leading-tight whitespace-nowrap">
             ReportHub
           </h1>
-          {currentUser.role === 'organization' && (
+          {user?.role === 'organization' && user.companyName && (
             <p className="text-[11px] text-[var(--color-text-muted)] font-medium mt-0.5 leading-tight whitespace-nowrap">
-              {currentUser.companyName}
+              {user.companyName}
             </p>
           )}
         </div>
@@ -136,8 +135,52 @@ export const Sidebar: React.FC = () => {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-6">
         <div className="space-y-1.5 px-3">
-          {filteredNavItems.map((item) => {
+          {navItems.map((item) => {
             const active = isActive(item.path);
+            const isTeamLink = item.path === '/app/team';
+            const isRestricted = isTeamLink && user?.role === 'individual';
+            const shouldShow = !item.roles || (user && item.roles.includes(user.role)) || isRestricted;
+
+            if (!shouldShow) return null;
+
+            // For restricted Team link, render a button instead of Link
+            if (isRestricted) {
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="group relative flex items-center h-11 rounded-lg transition-all duration-500 ease-in-out overflow-hidden w-full text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-title)]"
+                  title={isCollapsed ? item.label : undefined}
+                >
+                  {/* Fixed position icon - rendered exactly like Organization account */}
+                  <div className="absolute left-3 flex-shrink-0 transition-colors duration-300 ease-out">
+                    {item.icon}
+                  </div>
+
+                  {/* Text with clip reveal - rendered exactly like Organization account */}
+                  <span
+                    className="absolute left-11 text-[13px] font-semibold tracking-[-0.01em] whitespace-nowrap transition-all duration-500 ease-in-out overflow-hidden"
+                    style={{
+                      maxWidth: isCollapsed ? '0px' : '150px',
+                      opacity: isCollapsed ? 0 : 1,
+                    }}
+                  >
+                    {item.label}
+                  </span>
+
+                  {/* Blur overlay - easily adjustable via blur-overlay class */}
+                  <div className="absolute inset-0 backdrop-blur-[1px] pointer-events-none blur-overlay" />
+
+                  {/* Tooltip for collapsed state */}
+                  {isCollapsed && (
+                    <div className="absolute left-full ml-4 px-3 py-1.5 bg-[var(--color-primary)] text-white text-[11px] font-semibold rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 ease-out whitespace-nowrap z-50 shadow-lg">
+                      {item.label} (Pro)
+                    </div>
+                  )}
+                </button>
+              );
+            }
+
             return (
               <Link
                 key={item.path}
@@ -198,7 +241,7 @@ export const Sidebar: React.FC = () => {
             className="absolute left-1 w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center text-white text-[13px] font-bold shadow-sm ring-2 ring-white/5 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
             title="Profile Settings"
           >
-            {currentUser.name.charAt(0)}
+            {user?.name.charAt(0) || 'U'}
           </Link>
 
           {/* Logout button - only visible when expanded */}
@@ -272,6 +315,9 @@ export const Sidebar: React.FC = () => {
       >
         <NavContent isCollapsed={false} isMobile={true} />
       </aside>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
     </>
   );
 };

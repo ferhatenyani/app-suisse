@@ -5,18 +5,19 @@ import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/ui/Avatar';
-import { currentUser } from '../data/currentUser';
+import { useAuth } from '../contexts/AuthContext';
 import { formatDate } from '../utils/formatters';
 
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isEditingMainContent, setIsEditingMainContent] = useState(false);
   const [formData, setFormData] = useState({
-    name: currentUser.name,
-    email: currentUser.email,
-    companyName: currentUser.companyName || '',
-    avatar: currentUser.avatar || '',
+    name: user?.name || '',
+    email: user?.email || '',
+    companyName: user?.companyName || '',
+    avatar: user?.avatar || '',
   });
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -39,7 +40,7 @@ export const Profile: React.FC = () => {
   const handleCancelProfile = () => {
     setFormData({
       ...formData,
-      avatar: currentUser.avatar || '',
+      avatar: user?.avatar || '',
     });
     setIsEditingProfile(false);
   };
@@ -70,16 +71,16 @@ export const Profile: React.FC = () => {
 
   const handleCancelMainContent = () => {
     setFormData({
-      name: currentUser.name,
-      email: currentUser.email,
-      companyName: currentUser.companyName || '',
-      avatar: currentUser.avatar || '',
+      name: user?.name || '',
+      email: user?.email || '',
+      companyName: user?.companyName || '',
+      avatar: user?.avatar || '',
     });
     setIsEditingMainContent(false);
   };
 
   const handleLogout = () => {
-    // Clear any user session data here if needed
+    logout();
     navigate('/login');
   };
 
@@ -188,16 +189,16 @@ export const Profile: React.FC = () => {
                     <div className="min-w-0">
                       <p className="text-base font-semibold text-[var(--color-text)]">Account Type</p>
                       <p className="text-sm text-[var(--color-text-muted)] mt-1 truncate font-medium">
-                        {currentUser.role === 'organization' ? 'Organization account' : 'Personal account'}
+                        {user?.role === 'organization' ? 'Organization account' : 'Personal account'}
                       </p>
                     </div>
                   </div>
                   <span className={`px-4 py-2 rounded-md border text-sm font-semibold flex-shrink-0 ml-2 transition-all duration-200 ${
-                    currentUser.role === 'organization'
+                    user?.role === 'organization'
                       ? 'bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200 text-purple-700'
                       : 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200 text-blue-700'
                   }`}>
-                    {currentUser.role === 'organization' ? 'Enterprise' : 'Personal'}
+                    {user?.role === 'organization' ? 'Enterprise' : 'Personal'}
                   </span>
                 </div>
 
@@ -208,7 +209,7 @@ export const Profile: React.FC = () => {
                     <div>
                       <p className="text-base font-semibold text-[var(--color-text)]">Member Since</p>
                       <p className="text-sm text-[var(--color-text-muted)] mt-1 font-medium">
-                        {formatDate(currentUser.createdAt)}
+                        {formatDate(user?.createdAt || '')}
                       </p>
                     </div>
                   </div>
@@ -265,7 +266,7 @@ export const Profile: React.FC = () => {
                     aria-label="Email address"
                   />
 
-                  {currentUser.role === 'organization' && (
+                  {user?.role === 'organization' && (
                     <Input
                       label="Company Name"
                       type="text"

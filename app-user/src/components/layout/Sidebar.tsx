@@ -77,7 +77,7 @@ export const Sidebar: React.FC = () => {
     }
   }, [isHovered]);
 
-  const NavContent = ({ isCollapsed }: { isCollapsed: boolean }) => (
+  const NavContent = ({ isCollapsed, isMobile }: { isCollapsed: boolean; isMobile?: boolean }) => (
     <>
       {/* Logo Area */}
       <div className="relative h-16 border-b border-[var(--color-border)] overflow-hidden">
@@ -103,6 +103,17 @@ export const Sidebar: React.FC = () => {
             </p>
           )}
         </div>
+
+        {/* Close button for mobile - aligned to the right */}
+        {isMobile && (
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-title)] hover:bg-[var(--color-surface-hover)] rounded-md transition-colors"
+            aria-label="Close menu"
+          >
+            <X size={20} />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -195,19 +206,24 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Mobile menu button */}
+      {/* Mobile menu button - fades out when sidebar opens */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-md border border-[var(--color-border)] text-[var(--color-title)] hover:bg-[var(--color-surface-hover)] transition-colors"
+        className={`lg:hidden fixed left-4 z-50 p-2 bg-white rounded-md border border-[var(--color-border)] text-[var(--color-title)] hover:bg-[var(--color-surface-hover)] shadow-sm transition-all ease-in-out ${
+          isMobileMenuOpen
+            ? 'opacity-0 pointer-events-none duration-300'
+            : 'opacity-100 duration-300 delay-300'
+        }`}
+        style={{ top: 'calc((4rem - 2.25rem) / 2)' }}
         aria-label="Toggle menu"
       >
-        {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        <Menu size={20} />
       </button>
 
       {/* Mobile menu overlay */}
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-40 z-40 transition-opacity duration-500 ease-in-out"
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-10 z-40 transition-opacity duration-500 ease-in-out"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
@@ -224,7 +240,7 @@ export const Sidebar: React.FC = () => {
           ${isHovered ? 'w-64' : 'w-20'}
         `}
       >
-        <NavContent isCollapsed={!isHovered} />
+        <NavContent isCollapsed={!isHovered} isMobile={false} />
       </aside>
 
       {/* Mobile Sidebar - Full width when open */}
@@ -236,7 +252,7 @@ export const Sidebar: React.FC = () => {
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        <NavContent isCollapsed={false} />
+        <NavContent isCollapsed={false} isMobile={true} />
       </aside>
     </>
   );

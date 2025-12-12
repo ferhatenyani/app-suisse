@@ -17,8 +17,8 @@ export const ContactSupport: React.FC = () => {
   const mockTickets: SupportTicket[] = useMemo(() => [
     {
       id: 'TKT-001',
+      type: 'request',
       category: 'request_new_report',
-      priority: 'high',
       status: 'in_progress',
       subject: 'Need Sales Performance Dashboard',
       messages: [
@@ -42,8 +42,8 @@ export const ContactSupport: React.FC = () => {
     },
     {
       id: 'TKT-002',
+      type: 'incident',
       category: 'technical_issue',
-      priority: 'urgent',
       status: 'open',
       subject: 'Dashboard Not Loading - Error 500',
       messages: [
@@ -69,8 +69,8 @@ export const ContactSupport: React.FC = () => {
     },
     {
       id: 'TKT-003',
+      type: 'request',
       category: 'feature_request',
-      priority: 'medium',
       status: 'resolved',
       subject: 'Add Export to Excel Feature',
       messages: [
@@ -105,6 +105,7 @@ export const ContactSupport: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [initialCategory, setInitialCategory] = useState<string | undefined>(undefined);
+  const [initialType, setInitialType] = useState<string | undefined>(undefined);
 
   const selectedTicket = tickets.find(t => t.id === selectedTicketId);
 
@@ -114,9 +115,10 @@ export const ContactSupport: React.FC = () => {
     if (mainElement) mainElement.scrollTo(0, 0);
 
     // Check if we should auto-open the create modal
-    const state = location.state as { openCreateModal?: boolean; category?: string } | null;
+    const state = location.state as { openCreateModal?: boolean; category?: string; type?: string } | null;
     if (state?.openCreateModal) {
       setInitialCategory(state.category);
+      setInitialType(state.type);
       setIsCreateModalOpen(true);
       // Clear the state to prevent reopening on refresh
       window.history.replaceState({}, document.title);
@@ -135,9 +137,9 @@ export const ContactSupport: React.FC = () => {
   const handleCreateTicket = (formData: TicketFormData) => {
     const newTicket: SupportTicket = {
       id: generateTicketId(),
+      type: formData.type,
       category: formData.category,
       customCategory: formData.customCategory,
-      priority: formData.priority,
       status: 'new',
       subject: formData.subject,
       messages: [
@@ -295,9 +297,11 @@ export const ContactSupport: React.FC = () => {
         onClose={() => {
           setIsCreateModalOpen(false);
           setInitialCategory(undefined);
+          setInitialType(undefined);
         }}
         onSubmit={handleCreateTicket}
         initialCategory={initialCategory}
+        initialType={initialType}
       />
     </div>
   );

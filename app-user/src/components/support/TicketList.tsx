@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '../ui/Card';
-import { PriorityBadge } from './PriorityBadge';
+import { TypeBadge } from './TypeBadge';
 import { StatusBadge } from './StatusBadge';
 import { Clock, MessageSquare } from 'lucide-react';
 import type { SupportTicket } from '../../types';
@@ -81,7 +81,7 @@ export const TicketList: React.FC<TicketListProps> = ({ tickets, onTicketClick }
                 {/* Badges */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <StatusBadge status={ticket.status} size="sm" />
-                  <PriorityBadge priority={ticket.priority} size="sm" />
+                  <TypeBadge type={ticket.type} size="sm" />
                 </div>
               </div>
 

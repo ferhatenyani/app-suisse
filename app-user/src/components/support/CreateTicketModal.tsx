@@ -5,19 +5,20 @@ import { Input } from '../ui/Input';
 import { Textarea } from '../ui/Textarea';
 import { Select } from '../ui/Select';
 import { Upload, X, FileText } from 'lucide-react';
-import type { TicketCategory, TicketPriority } from '../../types';
+import type { TicketCategory, TicketType } from '../../types';
 
 interface CreateTicketModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (ticketData: TicketFormData) => void;
   initialCategory?: string;
+  initialType?: string;
 }
 
 export interface TicketFormData {
+  type: TicketType;
   category: TicketCategory;
   customCategory?: string;
-  priority: TicketPriority;
   subject: string;
   description: string;
   attachments: File[];
@@ -31,11 +32,9 @@ const categoryOptions = [
   { value: 'other', label: 'Other' },
 ];
 
-const priorityOptions = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
-  { value: 'urgent', label: 'Urgent' },
+const ticketTypeOptions: { value: TicketType; label: string }[] = [
+  { value: 'incident', label: 'Incident' },
+  { value: 'request', label: 'Request' },
 ];
 
 export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
@@ -43,10 +42,11 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   onClose,
   onSubmit,
   initialCategory,
+  initialType,
 }) => {
   const [formData, setFormData] = useState<TicketFormData>({
+    type: (initialType as TicketType) || 'incident',
     category: (initialCategory as TicketCategory) || 'technical_issue',
-    priority: 'medium',
     subject: '',
     description: '',
     attachments: [],
@@ -54,21 +54,31 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
   const [errors, setErrors] = useState<Partial<Record<keyof TicketFormData, string>>>({});
 
-  // Update category when initialCategory prop changes
+  // Update type and category when initial props change
   useEffect(() => {
-    if (initialCategory && isOpen) {
+    if (isOpen) {
       setFormData(prev => ({
         ...prev,
-        category: initialCategory as TicketCategory,
+        ...(initialType && { type: initialType as TicketType }),
+        ...(initialCategory && { category: initialCategory as TicketCategory }),
       }));
     }
-  }, [initialCategory, isOpen]);
+  }, [initialCategory, initialType, isOpen]);
 
   const handleInputChange = (field: keyof TicketFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
+  };
+
+  const handleTypeChange = (type: TicketType) => {
+    setFormData(prev => ({
+      ...prev,
+      type,
+      // When switching to incident, force category to technical_issue
+      category: type === 'incident' ? 'technical_issue' : prev.category === 'technical_issue' ? 'request_new_report' : prev.category,
+    }));
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,8 +133,8 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
       onSubmit(formData);
       // Reset form
       setFormData({
+        type: 'incident',
         category: 'technical_issue',
-        priority: 'medium',
         subject: '',
         description: '',
         attachments: [],
@@ -136,8 +146,8 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
   const handleClose = () => {
     setFormData({
+      type: 'incident',
       category: 'technical_issue',
-      priority: 'medium',
       subject: '',
       description: '',
       attachments: [],
@@ -164,12 +174,47 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
       }
     >
       <div className="space-y-5">
+        {/* Ticket Type Toggle */}
+        <div>
+          <label className="block text-sm font-semibold text-[var(--color-text)] mb-2">
+            Type
+          </label>
+          <div className="flex gap-3">
+            {ticketTypeOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleTypeChange(option.value)}
+                className={`
+                  flex-1 px-4 py-3 rounded-lg font-medium text-sm
+                  transition-all duration-200 ease-in-out
+                  border-2
+                  ${
+                    formData.type === option.value
+                      ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-md scale-[1.02]'
+                      : 'border-[var(--color-border)] bg-[var(--color-panel)] text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary-light)] hover:scale-[1.01]'
+                  }
+                  active:scale-[0.98]
+                `}
+                aria-pressed={formData.type === option.value}
+                aria-label={`Select ${option.label}`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Category Selector */}
         <Select
           label="Category"
-          options={categoryOptions}
+          options={categoryOptions.map(opt => ({
+            ...opt,
+            disabled: formData.type === 'request' && opt.value === 'technical_issue',
+          }))}
           value={formData.category}
           onChange={(e) => handleInputChange('category', e.target.value as TicketCategory)}
+          disabled={formData.type === 'incident'}
           aria-label="Ticket category"
         />
 
@@ -183,15 +228,6 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
             error={errors.customCategory}
           />
         )}
-
-        {/* Priority Selector */}
-        <Select
-          label="Priority"
-          options={priorityOptions}
-          value={formData.priority}
-          onChange={(e) => handleInputChange('priority', e.target.value as TicketPriority)}
-          aria-label="Ticket priority"
-        />
 
         {/* Subject Input */}
         <Input

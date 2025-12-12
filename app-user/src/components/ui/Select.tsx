@@ -4,6 +4,7 @@ import { ChevronDown, Check } from 'lucide-react';
 interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 interface SelectProps {
@@ -69,6 +70,8 @@ export const Select: React.FC<SelectProps> = ({
   };
 
   const handleOptionClick = (option: SelectOption) => {
+    if (option.disabled) return;
+
     if (onChange) {
       // Create a synthetic event to match the original API
       const syntheticEvent = {
@@ -136,6 +139,7 @@ export const Select: React.FC<SelectProps> = ({
           >
             {options.map((option) => {
               const isSelected = option.value === value;
+              const isDisabled = option.disabled || false;
               return (
                 <button
                   key={option.value}
@@ -143,18 +147,22 @@ export const Select: React.FC<SelectProps> = ({
                   onClick={() => handleOptionClick(option)}
                   role="option"
                   aria-selected={isSelected}
+                  aria-disabled={isDisabled}
+                  disabled={isDisabled}
                   className={`
                     w-full px-3 py-2 text-left text-sm
                     flex items-center justify-between
                     transition-colors duration-150
-                    ${isSelected
-                      ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
-                      : 'text-[var(--color-text)] hover:bg-[var(--color-panel)]'
+                    ${isDisabled
+                      ? 'opacity-50 cursor-not-allowed text-[var(--color-text-muted)]'
+                      : isSelected
+                        ? 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                        : 'text-[var(--color-text)] hover:bg-[var(--color-panel)]'
                     }
                   `}
                 >
                   <span className="block truncate">{option.label}</span>
-                  {isSelected && (
+                  {isSelected && !isDisabled && (
                     <Check size={16} className="text-[var(--color-primary)] ml-2 flex-shrink-0" />
                   )}
                 </button>

@@ -72,7 +72,7 @@ export type TicketCategory =
   | 'billing'
   | 'other';
 
-export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TicketType = 'incident' | 'request';
 
 export type TicketStatus = 'new' | 'open' | 'in_progress' | 'resolved' | 'closed';
 
@@ -95,9 +95,9 @@ export interface TicketAttachment {
 
 export interface SupportTicket {
   id: string;
+  type: TicketType;
   category: TicketCategory;
   customCategory?: string;
-  priority: TicketPriority;
   status: TicketStatus;
   subject: string;
   messages: TicketMessage[];

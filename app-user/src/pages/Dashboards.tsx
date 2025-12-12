@@ -44,7 +44,7 @@ export const Dashboards: React.FC = () => {
             icon={<FileText size={20} strokeWidth={2} />}
             className="whitespace-nowrap shadow-lg hover:shadow-xl transition-all duration-200"
             aria-label="Request a new report"
-            onClick={() => navigate('/app/support', { state: { openCreateModal: true, category: 'request_new_report' } })}
+            onClick={() => navigate('/app/support', { state: { openCreateModal: true, category: 'request_new_report', type: 'request' } })}
           >
             Request a Report
           </Button>

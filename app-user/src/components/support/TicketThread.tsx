@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
-import { PriorityBadge } from './PriorityBadge';
+import { TypeBadge } from './TypeBadge';
 import { StatusBadge } from './StatusBadge';
 import {
   ArrowLeft,
@@ -137,7 +137,7 @@ export const TicketThread: React.FC<TicketThreadProps> = ({
               </h1>
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <StatusBadge status={ticket.status} />
-                <PriorityBadge priority={ticket.priority} />
+                <TypeBadge type={ticket.type} />
               </div>
             </div>
           </div>

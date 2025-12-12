@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, Users, User, LifeBuoy, Menu, X, Bell, LogOut } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Users, User, LifeBuoy, Menu, X, Bell } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { UpgradeModal } from '../ui/UpgradeModal';
+import { ProfileActionsModal } from '../ui/ProfileActionsModal';
 
 interface NavItem {
   path: string;
@@ -18,8 +19,8 @@ export const Sidebar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanding, setIsExpanding] = useState(false);
-  const [isFullyExpanded, setIsFullyExpanded] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   // Minimalist corporate navigation
   const navItems: NavItem[] = [
@@ -63,6 +64,13 @@ export const Sidebar: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+    setShowProfileModal(false);
+  };
+
+  const handleNavigateToProfile = () => {
+    navigate('/app/profile');
+    setShowProfileModal(false);
+    setIsMobileMenuOpen(false);
   };
 
   // Handle indicator fade animation during expand/collapse
@@ -70,26 +78,18 @@ export const Sidebar: React.FC = () => {
     if (isHovered) {
       // When expanding, fade out immediately
       setIsExpanding(true);
-      setIsFullyExpanded(false);
 
       // After sidebar expansion completes (500ms), fade indicator back in
       const timer = setTimeout(() => {
         setIsExpanding(false);
       }, 500);
 
-      // After full animation completes (700ms: 500ms expansion + 200ms fade-in delay), enable hover
-      const expandedTimer = setTimeout(() => {
-        setIsFullyExpanded(true);
-      }, 700);
-
       return () => {
         clearTimeout(timer);
-        clearTimeout(expandedTimer);
       };
     } else {
       // When collapsing, keep indicator visible
       setIsExpanding(false);
-      setIsFullyExpanded(false);
     }
   }, [isHovered]);
 
@@ -233,34 +233,18 @@ export const Sidebar: React.FC = () => {
 
       {/* User Info at Bottom */}
       <div className="border-t border-[var(--color-border)] p-3">
-        <div className="relative flex items-center h-11 rounded-lg bg-[var(--color-panel)] overflow-hidden">
-          {/* Fixed position avatar - clickable link to profile */}
-          <Link
-            to="/app/profile"
-            onClick={() => setIsMobileMenuOpen(false)}
+        <button
+          onClick={() => setShowProfileModal(true)}
+          className="relative flex items-center h-11 rounded-lg bg-[var(--color-panel)] overflow-hidden w-full hover:bg-[var(--color-surface-hover)] transition-colors duration-200"
+        >
+          {/* Fixed position avatar */}
+          <div
             className="absolute left-1 w-9 h-9 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center text-white text-[13px] font-bold shadow-sm ring-2 ring-white/5 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
             title="Profile Settings"
           >
             {user?.name.charAt(0) || 'U'}
-          </Link>
-
-          {/* Logout button - only visible when expanded */}
-          <button
-            onClick={handleLogout}
-            className={`absolute right-1 p-2 text-red-500 rounded-lg transition-colors ${
-              isFullyExpanded ? 'hover:text-white hover:!bg-red-600' : ''
-            }`}
-            title="Log out"
-            aria-label="Log out"
-            style={{
-              opacity: isCollapsed ? 0 : 1,
-              pointerEvents: isCollapsed ? 'none' : 'auto',
-              transition: 'opacity 500ms ease-in-out 200ms',
-            }}
-          >
-            <LogOut size={18} strokeWidth={1.5} />
-          </button>
-        </div>
+          </div>
+        </button>
       </div>
     </>
   );
@@ -318,6 +302,16 @@ export const Sidebar: React.FC = () => {
 
       {/* Upgrade Modal */}
       <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+
+      {/* Profile Actions Modal */}
+      <ProfileActionsModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        onNavigateToProfile={handleNavigateToProfile}
+        onLogout={handleLogout}
+        userName={user?.name}
+        isExpanded={isHovered}
+      />
     </>
   );
 };

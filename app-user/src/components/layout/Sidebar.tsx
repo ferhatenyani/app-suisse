@@ -16,6 +16,7 @@ export const Sidebar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanding, setIsExpanding] = useState(false);
+  const [isFullyExpanded, setIsFullyExpanded] = useState(false);
 
   // Minimalist corporate navigation
   const navItems: NavItem[] = [
@@ -70,16 +71,26 @@ export const Sidebar: React.FC = () => {
     if (isHovered) {
       // When expanding, fade out immediately
       setIsExpanding(true);
+      setIsFullyExpanded(false);
 
       // After sidebar expansion completes (500ms), fade indicator back in
       const timer = setTimeout(() => {
         setIsExpanding(false);
       }, 500);
 
-      return () => clearTimeout(timer);
+      // After full animation completes (700ms: 500ms expansion + 200ms fade-in delay), enable hover
+      const expandedTimer = setTimeout(() => {
+        setIsFullyExpanded(true);
+      }, 700);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(expandedTimer);
+      };
     } else {
       // When collapsing, keep indicator visible
       setIsExpanding(false);
+      setIsFullyExpanded(false);
     }
   }, [isHovered]);
 
@@ -193,11 +204,16 @@ export const Sidebar: React.FC = () => {
           {/* Logout button - only visible when expanded */}
           <button
             onClick={handleLogout}
-            className={`absolute right-1 p-2 text-red-500 hover:text-white hover:!bg-red-600 rounded-lg transition-all duration-300 ${
-              isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+            className={`absolute right-1 p-2 text-red-500 rounded-lg transition-colors ${
+              isFullyExpanded ? 'hover:text-white hover:!bg-red-600' : ''
             }`}
             title="Log out"
             aria-label="Log out"
+            style={{
+              opacity: isCollapsed ? 0 : 1,
+              pointerEvents: isCollapsed ? 'none' : 'auto',
+              transition: 'opacity 500ms ease-in-out 200ms',
+            }}
           >
             <LogOut size={18} strokeWidth={1.5} />
           </button>

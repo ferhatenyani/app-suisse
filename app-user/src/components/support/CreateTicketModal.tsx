@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -11,6 +11,7 @@ interface CreateTicketModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (ticketData: TicketFormData) => void;
+  initialCategory?: string;
 }
 
 export interface TicketFormData {
@@ -41,9 +42,10 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  initialCategory,
 }) => {
   const [formData, setFormData] = useState<TicketFormData>({
-    category: 'technical_issue',
+    category: (initialCategory as TicketCategory) || 'technical_issue',
     priority: 'medium',
     subject: '',
     description: '',
@@ -51,6 +53,16 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof TicketFormData, string>>>({});
+
+  // Update category when initialCategory prop changes
+  useEffect(() => {
+    if (initialCategory && isOpen) {
+      setFormData(prev => ({
+        ...prev,
+        category: initialCategory as TicketCategory,
+      }));
+    }
+  }, [initialCategory, isOpen]);
 
   const handleInputChange = (field: keyof TicketFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));

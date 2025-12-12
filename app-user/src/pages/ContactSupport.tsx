@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { CreateTicketModal } from '../components/support/CreateTicketModal';
 import type { TicketFormData } from '../components/support/CreateTicketModal';
@@ -97,9 +98,11 @@ const mockTickets: SupportTicket[] = [
 ];
 
 export const ContactSupport: React.FC = () => {
+  const location = useLocation();
   const [tickets, setTickets] = useState<SupportTicket[]>(mockTickets);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [initialCategory, setInitialCategory] = useState<string | undefined>(undefined);
 
   const selectedTicket = tickets.find(t => t.id === selectedTicketId);
 
@@ -107,7 +110,16 @@ export const ContactSupport: React.FC = () => {
     window.scrollTo(0, 0);
     const mainElement = document.querySelector('main');
     if (mainElement) mainElement.scrollTo(0, 0);
-  }, []);
+
+    // Check if we should auto-open the create modal
+    const state = location.state as { openCreateModal?: boolean; category?: string } | null;
+    if (state?.openCreateModal) {
+      setInitialCategory(state.category);
+      setIsCreateModalOpen(true);
+      // Clear the state to prevent reopening on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   // Generate a unique ticket ID
   const generateTicketId = (): string => {
@@ -278,8 +290,12 @@ export const ContactSupport: React.FC = () => {
       {/* Create Ticket Modal */}
       <CreateTicketModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setInitialCategory(undefined);
+        }}
         onSubmit={handleCreateTicket}
+        initialCategory={initialCategory}
       />
     </div>
   );

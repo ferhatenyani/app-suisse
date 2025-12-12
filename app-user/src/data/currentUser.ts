@@ -1,4 +1,4 @@
-import { User } from '../types';
+import type { User } from '../types';
 
 // Mock current user - change this to switch between individual and organization views
 export const currentUser: User = {

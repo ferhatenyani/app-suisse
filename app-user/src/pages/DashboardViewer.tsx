@@ -248,7 +248,7 @@ export const DashboardViewer: React.FC = () => {
                 aria-label="Exit fullscreen mode"
                 className="shadow-2xl"
               >
-
+                Exit
               </Button>
             </div>
           )}

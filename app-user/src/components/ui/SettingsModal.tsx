@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { Input } from './Input';
 import { Select } from './Select';
 
 interface SettingsModalProps {

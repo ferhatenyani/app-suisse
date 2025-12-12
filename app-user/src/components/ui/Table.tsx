@@ -44,7 +44,7 @@ const TableRow = React.memo(<T extends { id: string | number }>({
   row: T;
   columns: Column<T>[];
   getCellValue: (row: T, column: Column<T>) => React.ReactNode;
-}) => JSX.Element;
+}) => React.ReactElement;
 
 export function Table<T extends { id: string | number }>({
   data,

@@ -1,4 +1,4 @@
-import { Dashboard } from '../types';
+import type { Dashboard } from '../types';
 
 export const dashboards: Dashboard[] = [
   {

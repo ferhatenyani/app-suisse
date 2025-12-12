@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Save, X, User as UserIcon, Mail, Building2, Lock, Calendar, Shield, LogOut } from 'lucide-react';
+import { Camera, User as UserIcon, Mail, Building2, Lock, Calendar, Shield, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';

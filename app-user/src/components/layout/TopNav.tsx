@@ -35,6 +35,18 @@ export const TopNav: React.FC = () => {
 
         {/* Right - Language, Notifications, Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
+
+          {/* Notifications */}
+          <button
+            onClick={() => navigate('/app/notifications')}
+            className="relative p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-title)] hover:bg-[var(--color-surface-hover)] rounded-md transition-colors"
+            aria-label="Notifications"
+          >
+            <Bell size={20} strokeWidth={1.5} />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--color-danger)] rounded-full border-2 border-white"></span>
+            )}
+          </button>
           {/* Language Toggle */}
           <button
             onClick={toggleLanguage}
@@ -52,26 +64,9 @@ export const TopNav: React.FC = () => {
             {/* Animated accent line */}
           </button>
 
-          {/* Notifications */}
-          <button
-            onClick={() => navigate('/app/notifications')}
-            className="relative p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-title)] hover:bg-[var(--color-surface-hover)] rounded-md transition-colors"
-            aria-label="Notifications"
-          >
-            <Bell size={20} strokeWidth={1.5} />
-            {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--color-danger)] rounded-full border-2 border-white"></span>
-            )}
-          </button>
+          
 
-          {/* Profile */}
-          <button
-            onClick={() => navigate('/app/profile')}
-            className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-title)] hover:bg-[var(--color-surface-hover)] rounded-md transition-colors"
-            aria-label="Profile"
-          >
-            <User size={20} strokeWidth={1.5} />
-          </button>
+          
         </div>
       </div>
     </header>

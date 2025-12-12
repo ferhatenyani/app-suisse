@@ -5,8 +5,8 @@ import { CreateTicketModal } from '../components/support/CreateTicketModal';
 import type { TicketFormData } from '../components/support/CreateTicketModal';
 import { TicketList } from '../components/support/TicketList';
 import { TicketThread } from '../components/support/TicketThread';
-import { Plus, LifeBuoy } from 'lucide-react';
-import type { SupportTicket, TicketMessage } from '../types';
+import { Plus, LifeBuoy, Filter, X } from 'lucide-react';
+import type { SupportTicket, TicketMessage, TicketStatus, TicketType } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 
 export const ContactSupport: React.FC = () => {
@@ -107,7 +107,20 @@ export const ContactSupport: React.FC = () => {
   const [initialCategory, setInitialCategory] = useState<string | undefined>(undefined);
   const [initialType, setInitialType] = useState<string | undefined>(undefined);
 
+  // Filter states
+  const [selectedStatuses, setSelectedStatuses] = useState<TicketStatus[]>([]);
+  const [selectedType, setSelectedType] = useState<TicketType | null>(null);
+
   const selectedTicket = tickets.find(t => t.id === selectedTicketId);
+
+  // Filter tickets based on selected filters
+  const filteredTickets = useMemo(() => {
+    return tickets.filter(ticket => {
+      const statusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(ticket.status);
+      const typeMatch = selectedType === null || ticket.type === selectedType;
+      return statusMatch && typeMatch;
+    });
+  }, [tickets, selectedStatuses, selectedType]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -212,6 +225,34 @@ export const ContactSupport: React.FC = () => {
     );
   };
 
+  // Filter handlers
+  const toggleStatus = (status: TicketStatus) => {
+    setSelectedStatuses(prev =>
+      prev.includes(status)
+        ? prev.filter(s => s !== status)
+        : [...prev, status]
+    );
+  };
+
+  const toggleType = (type: TicketType) => {
+    setSelectedType(prev => prev === type ? null : type);
+  };
+
+  const clearFilters = () => {
+    setSelectedStatuses([]);
+    setSelectedType(null);
+  };
+
+  const clearStatusFilter = () => {
+    setSelectedStatuses([]);
+  };
+
+  const clearTypeFilter = () => {
+    setSelectedType(null);
+  };
+
+  const hasActiveFilters = selectedStatuses.length > 0 || selectedType !== null;
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -281,12 +322,112 @@ export const ContactSupport: React.FC = () => {
             </div>
           </div>
 
+          {/* Filter Section */}
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-3 sm:p-4">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Filter size={16} className="text-[var(--color-text-secondary)]" />
+                <h3 className="text-sm font-semibold text-[var(--color-text)]">Filters</h3>
+              </div>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="text-xs font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors flex items-center gap-1"
+                >
+                  <X size={12} />
+                  Clear all
+                </button>
+              )}
+            </div>
+
+            {/* Horizontal filter layout on larger screens, stacked on mobile */}
+            <div className="flex flex-col lg:flex-row lg:items-start gap-2">
+              {/* Status Filter */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-semibold text-[var(--color-text-secondary)]">
+                    Status
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {(['new', 'open', 'in_progress', 'resolved', 'closed'] as TicketStatus[]).map(status => (
+                    <button
+                      key={status}
+                      onClick={() => toggleStatus(status)}
+                      className={`
+                        relative px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-sm font-medium transition-all
+                        ${selectedStatuses.includes(status)
+                          ? 'bg-[var(--color-primary)] text-white shadow-md hover:shadow-lg pr-7 sm:pr-8'
+                          : 'bg-[var(--color-background)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:shadow-sm'
+                        }
+                      `}
+                    >
+                      {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      {selectedStatuses.includes(status) && (
+                        <span className="absolute top-0 right-0 p-1 hover:bg-white/20 rounded-tr-lg rounded-bl-lg">
+                          <X size={12} />
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider - vertical on desktop only */}
+              <div className="hidden lg:block w-px bg-[var(--color-border)] self-stretch" />
+
+              {/* Type Filter */}
+              <div className="lg:w-56 min-w-0">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-semibold text-[var(--color-text-secondary)]">
+                    Type
+                  </label>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {(['incident', 'request'] as TicketType[]).map(type => (
+                    <button
+                      key={type}
+                      onClick={() => toggleType(type)}
+                      className={`
+                        relative px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-sm font-medium transition-all
+                        ${selectedType === type
+                          ? 'bg-[var(--color-primary)] text-white shadow-md hover:shadow-lg pr-7 sm:pr-8'
+                          : 'bg-[var(--color-background)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:shadow-sm'
+                        }
+                      `}
+                    >
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                      {selectedType === type && (
+                        <span className="absolute top-0 right-0 p-1 hover:bg-white/20 rounded-tr-lg rounded-bl-lg">
+                          <X size={12} />
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Ticket List */}
           <div>
             <h2 className="text-base sm:text-lg font-semibold text-[var(--color-text)] mb-3 sm:mb-4">
               Your Tickets
+              {hasActiveFilters && (
+                <span className="ml-2 text-sm font-normal text-[var(--color-text-secondary)]">
+                  ({filteredTickets.length} of {tickets.length})
+                </span>
+              )}
             </h2>
-            <TicketList tickets={tickets} onTicketClick={setSelectedTicketId} />
+            {filteredTickets.length === 0 ? (
+              <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-8 text-center">
+                <p className="text-[var(--color-text-secondary)] text-sm">
+                  No tickets found matching your filters.
+                </p>
+              </div>
+            ) : (
+              <TicketList tickets={filteredTickets} onTicketClick={setSelectedTicketId} />
+            )}
           </div>
         </>
       )}

@@ -224,11 +224,12 @@ export const TicketThread: React.FC<TicketThreadProps> = ({
             )}
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between gap-2 sm:gap-3">
-              <label className="cursor-pointer flex-1 sm:flex-initial">
+              <div className="flex-1 sm:flex-initial">
                 <input
                   type="file"
                   multiple
                   className="hidden"
+                  id="file-upload-input"
                   onChange={handleFileUpload}
                   accept="image/*,.pdf,.doc,.docx,.txt,.log"
                 />
@@ -237,10 +238,11 @@ export const TicketThread: React.FC<TicketThreadProps> = ({
                   size="sm"
                   icon={<Upload size={14} className="sm:w-4 sm:h-4" />}
                   className="w-full sm:w-auto"
+                  onClick={() => document.getElementById('file-upload-input')?.click()}
                 >
                   <span className="text-xs sm:text-sm">Attach Files</span>
                 </Button>
-              </label>
+              </div>
 
               <Button
                 variant="primary"

@@ -1,10 +1,18 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
 import { ScrollToTop } from './components/layout/ScrollToTop';
 import { LoadingState } from './components/feedback/LoadingState';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+// Redirect to static landing page
+const LandingRedirect: React.FC = () => {
+  useEffect(() => {
+    window.location.href = '/landingPage.html';
+  }, []);
+  return null;
+};
 
 // Lazy load all page components for code splitting and better performance
 const Login = lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
@@ -35,8 +43,8 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      {/* Root redirect to login */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      {/* Root - Redirect to static landing page */}
+      <Route path="/" element={<LandingRedirect />} />
 
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />

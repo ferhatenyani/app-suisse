@@ -14,7 +14,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const HARDCODED_ACCOUNTS = {
   organization: {
     email: 'organization@gmail.com',
-    password: '1234',
+    password: 'azerty1234',
     user: {
       id: '1',
       name: 'John Anderson',
@@ -27,7 +27,7 @@ const HARDCODED_ACCOUNTS = {
   },
   individual: {
     email: 'individual@gmail.com',
-    password: '1234',
+    password: 'azerty1234',
     user: {
       id: '2',
       name: 'Sarah Mitchell',

@@ -19,8 +19,12 @@ whats remaining :
 - side bar : done
 - request new report in dashboards page: done
 - mock data for the power bi embeded reports : done 
-- hardcode two user accounts with separate permissions and accessibilities: 
+- hardcode two user accounts with separate permissions and accessibilities: done
 
 
-- Movie Industry Insights Power BI Report
-- 
+samy feedback: 
+- new ticket modal (add two fields ( incident and request)): done
+- add filters in suport page (incident/request/status...etc): done
+- remove profile icon from topbar: done
+- remove log out button from sidebar and add it to a popup when clicking on profile icon: 
+

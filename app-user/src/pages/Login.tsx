@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LayoutGrid, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { LayoutGrid, Mail, Lock, ArrowRight, AlertCircle, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
@@ -13,6 +13,7 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [showDemoCredentials, setShowDemoCredentials] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -35,6 +36,12 @@ export const Login: React.FC = () => {
     }
   };
 
+  const fillDemoCredentials = (demoEmail: string, demoPassword: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setError('');
+  };
+
   // Corporate login: centered card with logo, minimal form, professional background
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--color-surface-elevated)] via-[var(--color-background)] to-[var(--color-panel)] flex items-center justify-center p-4 xs:p-6 lg:p-8">
@@ -46,6 +53,99 @@ export const Login: React.FC = () => {
           </div>
           <h1 className="text-2xl xs:text-3xl md:text-4xl font-bold text-[var(--color-title)] mb-2 xs:mb-3 tracking-tight">Welcome Back</h1>
           <p className="text-[var(--color-text-secondary)] text-sm xs:text-base md:text-lg">Sign in to access your reports and analytics</p>
+        </div>
+
+        {/* Demo Credentials Section */}
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => setShowDemoCredentials(!showDemoCredentials)}
+            className="w-full flex items-center justify-between p-4 xs:p-5 bg-gradient-to-r from-[var(--color-primary)]/15 to-[var(--color-accent)]/15 hover:from-[var(--color-primary)]/25 hover:to-[var(--color-accent)]/25 border-2 border-[var(--color-primary)]/40 rounded-lg transition-all group shadow-sm hover:shadow-md"
+            aria-expanded={showDemoCredentials}
+            aria-controls="demo-credentials"
+          >
+            <div className="flex items-center gap-3 xs:gap-4">
+              <div className="flex items-center justify-center w-10 h-10 xs:w-12 xs:h-12 rounded-lg bg-[var(--color-primary)]/20 group-hover:bg-[var(--color-primary)]/30 transition-colors">
+                <Info size={22} className="text-[var(--color-primary)]" />
+              </div>
+              <div className="text-left">
+                <span className="text-base xs:text-lg font-bold text-[var(--color-title)] block mb-1">Demo Account Access</span>
+                <span className="text-sm xs:text-base font-semibold text-[var(--color-primary)] group-hover:text-[var(--color-primary-hover)] transition-colors">
+                  Click here to view login credentials
+                </span>
+              </div>
+            </div>
+            {showDemoCredentials ? (
+              <ChevronUp size={24} className="text-[var(--color-primary)] transition-transform flex-shrink-0" />
+            ) : (
+              <ChevronDown size={24} className="text-[var(--color-primary)] transition-transform flex-shrink-0 animate-bounce" />
+            )}
+          </button>
+
+          {showDemoCredentials && (
+            <div
+              id="demo-credentials"
+              className="mt-3 p-4 xs:p-5 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg space-y-4 animate-in fade-in slide-in-from-top-2 duration-200"
+            >
+              <p className="text-xs xs:text-sm text-[var(--color-text-secondary)] mb-4">
+                Use these credentials to explore the demo application:
+              </p>
+
+              {/* Organization Account */}
+              <div className="p-4 bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-primary)]/30 transition-colors group">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-[var(--color-title)] mb-1">Organization Account</h3>
+                    <p className="text-xs text-[var(--color-text-secondary)]">John Anderson - Acme Corporation</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fillDemoCredentials('organization@gmail.com', 'azerty1234')}
+                    className="px-3 py-1.5 text-xs font-medium text-[var(--color-primary)] hover:text-white hover:bg-[var(--color-primary)] border border-[var(--color-primary)] rounded-md transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    Auto-fill
+                  </button>
+                </div>
+                <div className="space-y-2 text-xs xs:text-sm">
+                  <div className="flex items-center gap-2">
+                    <Mail size={14} className="text-[var(--color-text-muted)] flex-shrink-0" />
+                    <code className="text-[var(--color-text)] font-mono bg-[var(--color-surface-elevated)] px-2 py-1 rounded">organization@gmail.com</code>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock size={14} className="text-[var(--color-text-muted)] flex-shrink-0" />
+                    <code className="text-[var(--color-text)] font-mono bg-[var(--color-surface-elevated)] px-2 py-1 rounded">azerty1234</code>
+                  </div>
+                </div>
+              </div>
+
+              {/* Individual Account */}
+              <div className="p-4 bg-[var(--color-background)] border border-[var(--color-border)] rounded-lg hover:border-[var(--color-primary)]/30 transition-colors group">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-[var(--color-title)] mb-1">Individual Account</h3>
+                    <p className="text-xs text-[var(--color-text-secondary)]">Sarah Mitchell</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => fillDemoCredentials('individual@gmail.com', 'azerty1234')}
+                    className="px-3 py-1.5 text-xs font-medium text-[var(--color-primary)] hover:text-white hover:bg-[var(--color-primary)] border border-[var(--color-primary)] rounded-md transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    Auto-fill
+                  </button>
+                </div>
+                <div className="space-y-2 text-xs xs:text-sm">
+                  <div className="flex items-center gap-2">
+                    <Mail size={14} className="text-[var(--color-text-muted)] flex-shrink-0" />
+                    <code className="text-[var(--color-text)] font-mono bg-[var(--color-surface-elevated)] px-2 py-1 rounded">individual@gmail.com</code>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock size={14} className="text-[var(--color-text-muted)] flex-shrink-0" />
+                    <code className="text-[var(--color-text)] font-mono bg-[var(--color-surface-elevated)] px-2 py-1 rounded">azerty1234</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Login Card */}
